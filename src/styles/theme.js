@@ -183,10 +183,13 @@ export const INPUTS = {
   },
 };
 
-export default {
+// ✅ CORRECCIÓN: Asignar a variable antes de exportar
+const theme = {
   COLORS,
   FONTS,
   BUTTONS,
   CARDS,
   INPUTS,
 };
+
+export default theme;
