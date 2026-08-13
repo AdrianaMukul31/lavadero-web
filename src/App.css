@@ -1,38 +1,600 @@
-.App {
-  text-align: center;
+/* src/App.css */
+
+/* ==========================================
+   COLORES DE LA MARCA HI PERFORMANCE
+   ========================================== */
+:root {
+  --primary: #6A0DAD;
+  --primary-dark: #4A0A7A;
+  --primary-light: #8B5CF6;
+  --secondary: #22C55E;
+  --secondary-dark: #15803D;
+  --secondary-light: #86EFAC;
+  --silver: #C0C0C0;
+  --silver-light: #E5E7EB;
+  --silver-dark: #9CA3AF;
+  --text-light: #FFFFFF;
+  --text-dark: #1F2937;
+  --background: #F3F4F6;
+  --white: #FFFFFF;
+  --card-shadow: rgba(106, 13, 173, 0.15);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+  margin: 0;
+  padding: 0;
+  color: var(--text-dark);
+  min-height: 100vh;
+}
+
+/* ==========================================
+   HEADER / NAVBAR
+   ========================================== */
+.navbar {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+  box-shadow: 0 4px 20px rgba(106, 13, 173, 0.4) !important;
+  border-bottom: 3px solid var(--silver) !important;
+}
+
+.navbar .nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+.navbar .nav-title {
+  color: var(--text-light);
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.navbar .nav-title .highlight {
+  color: var(--secondary);
+  text-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+}
+
+.navbar .nav-title .silver {
+  color: var(--silver);
+}
+
+/* ==========================================
+   BOTÓN HAMBURGUESA
+   ========================================== */
+.menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 10px;
+  color: var(--text-light);
+  z-index: 1001;
+  transition: all 0.3s ease;
+}
+
+.menu-btn:hover {
+  transform: scale(1.1);
+}
+
+/* ==========================================
+   MENÚ DESPLEGABLE LATERAL
+   ========================================== */
+.side-menu {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 280px;
+  height: 100vh;
+  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+  box-shadow: -4px 0 30px rgba(0,0,0,0.4);
+  transition: right 0.3s ease;
+  z-index: 999;
+  padding: 20px 0;
+  overflow-y: auto;
+  border-left: 3px solid var(--silver);
+}
+
+.side-menu.open {
+  right: 0;
+}
+
+.side-menu .menu-header {
+  padding: 15px 20px;
+  border-bottom: 2px solid rgba(255,255,255,0.1);
+  margin-bottom: 10px;
+}
+
+.side-menu .menu-header .brand {
+  color: var(--text-light);
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.side-menu .menu-header .brand .highlight {
+  color: var(--secondary);
+}
+
+.side-menu .menu-header .brand .silver {
+  color: var(--silver);
+}
+
+.side-menu .menu-item {
+  display: block;
+  width: 100%;
+  padding: 12px 20px;
+  border: none;
+  background: none;
+  color: var(--text-light);
+  font-size: 16px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: inherit;
+  border-left: 3px solid transparent;
+}
+
+.side-menu .menu-item:hover {
+  background-color: rgba(255,255,255,0.1);
+  border-left-color: var(--secondary);
+}
+
+.side-menu .menu-item.active {
+  background-color: rgba(255,255,255,0.15);
+  border-left-color: var(--secondary);
+}
+
+.side-menu .menu-item.logout {
+  margin-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 15px;
+  color: #EF4444;
+}
+
+.side-menu .menu-item.logout:hover {
+  background-color: rgba(239, 68, 68, 0.2);
+}
+
+/* ==========================================
+   OVERLAY
+   ========================================== */
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 998;
+  display: none;
+  backdrop-filter: blur(3px);
+}
+
+.menu-overlay.open {
+  display: block;
+}
+
+/* ==========================================
+   NAV LINKS - ESCRITORIO
+   ========================================== */
+.nav-links {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.nav-links button {
+  padding: 8px 14px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-light);
+  border-radius: 8px;
+  transition: all 0.3s;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.nav-links button:hover {
+  background-color: rgba(255,255,255,0.15);
+  transform: translateY(-2px);
+}
+
+.nav-links .active {
+  background-color: rgba(255,255,255,0.2);
+  border: 1px solid var(--silver);
+  box-shadow: 0 0 20px rgba(192, 192, 192, 0.1);
+}
+
+.nav-links .logout-btn {
+  padding: 8px 18px;
+  background-color: #EF4444;
+  color: var(--text-light);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.nav-links .logout-btn:hover {
+  background-color: #DC2626;
+  transform: translateY(-2px);
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+@media (max-width: 768px) {
+  .menu-btn {
+    display: block !important;
+  }
+
+  .nav-links {
+    display: none !important;
+  }
+
+  .navbar .nav-title {
+    font-size: 16px;
   }
 }
 
-.App-header {
-  background-color: #282c34;
+@media (min-width: 769px) {
+  .menu-btn {
+    display: none !important;
+  }
+
+  .nav-links {
+    display: flex !important;
+  }
+
+  .side-menu {
+    display: none !important;
+  }
+
+  .menu-overlay {
+    display: none !important;
+  }
+}
+
+/* ==========================================
+   CONTENEDOR PRINCIPAL
+   ========================================== */
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: calc(100vh - 70px);
+}
+
+/* ==========================================
+   TARJETAS - CON COLORES DE MARCA
+   ========================================== */
+.card {
+  background-color: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(106, 13, 173, 0.08);
+  padding: 20px;
+  transition: all 0.3s ease;
+  border: 1px solid var(--silver-light);
+  margin-bottom: 20px;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 40px rgba(106, 13, 173, 0.15);
+  border-color: var(--primary-light);
+}
+
+.card-title {
+  color: var(--primary);
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+  border-bottom: 2px solid var(--primary-light);
+  padding-bottom: 10px;
+}
+
+/* ==========================================
+   LOGIN
+   ========================================== */
+.login-container {
   min-height: 100vh;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: center;
+  background: linear-gradient(135deg, #4A0A7A 0%, #6A0DAD 50%, #8B5CF6 100%);
+  padding: 20px;
+  position: relative;
 }
 
-.App-link {
-  color: #61dafb;
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.login-card {
+  background-color: rgba(255,255,255,0.95);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(106, 13, 173, 0.4);
+  width: 100%;
+  max-width: 420px;
+  border: 2px solid var(--silver);
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 1;
+}
+
+.logo-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.login-subtitle {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 25px;
+  color: var(--primary);
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.login-input {
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  border: 2px solid var(--silver-light);
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  background-color: var(--white);
+  color: var(--text-dark);
+}
+
+.login-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(106, 13, 173, 0.15);
+  outline: none;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: var(--text-light);
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 5px;
+  letter-spacing: 1px;
+}
+
+.login-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(106, 13, 173, 0.4);
+}
+
+.login-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.login-registro-btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  background: transparent;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.login-registro-btn:hover {
+  background: var(--primary);
+  color: var(--text-light);
+  transform: translateY(-2px);
+}
+
+.login-error {
+  color: #EF4444;
+  text-align: center;
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #FEE2E2;
+  border-radius: 8px;
+  border-left: 4px solid #EF4444;
+}
+
+.login-demo {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: var(--silver-dark);
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 25px;
   }
-  to {
-    transform: rotate(360deg);
+}
+
+/* ==========================================
+   BOTONES
+   ========================================== */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+  color: var(--text-light) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 12px 24px !important;
+  font-weight: bold !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 30px rgba(106, 13, 173, 0.4) !important;
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%) !important;
+  color: var(--text-light) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 12px 24px !important;
+  font-weight: bold !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn-secondary:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 30px rgba(34, 197, 94, 0.4) !important;
+}
+
+.btn-outline {
+  background: transparent !important;
+  color: var(--primary) !important;
+  border: 2px solid var(--primary) !important;
+  border-radius: 10px !important;
+  padding: 10px 22px !important;
+  font-weight: bold !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn-outline:hover {
+  background: var(--primary) !important;
+  color: var(--text-light) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* ==========================================
+   INPUTS - CON COLORES DE MARCA
+   ========================================== */
+input, select, textarea {
+  border: 2px solid var(--silver-light) !important;
+  border-radius: 10px !important;
+  padding: 12px 16px !important;
+  font-size: 16px !important;
+  transition: all 0.3s ease !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  background-color: var(--white) !important;
+  color: var(--text-dark) !important;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 4px rgba(106, 13, 173, 0.12) !important;
+  outline: none !important;
+}
+
+/* ==========================================
+   SCROLLBAR
+   ========================================== */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--silver-light);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark);
+}
+
+/* ==========================================
+   BADGES
+   ========================================== */
+.badge-primary {
+  background: var(--primary) !important;
+  color: var(--text-light) !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  font-size: 12px !important;
+  font-weight: bold !important;
+}
+
+.badge-secondary {
+  background: var(--secondary) !important;
+  color: var(--text-light) !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  font-size: 12px !important;
+  font-weight: bold !important;
+}
+
+.badge-silver {
+  background: var(--silver) !important;
+  color: var(--text-dark) !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  font-size: 12px !important;
+  font-weight: bold !important;
+}
+
+/* ==========================================
+   RESPONSIVE ADICIONAL
+   ========================================== */
+@media (max-width: 480px) {
+  .app-container {
+    padding: 10px;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  .card-title {
+    font-size: 1rem;
+  }
+
+  input, select, textarea {
+    font-size: 14px !important;
+    padding: 10px 12px !important;
+  }
+
+  .btn-primary, .btn-secondary {
+    padding: 10px 16px !important;
+    font-size: 14px !important;
   }
 }
