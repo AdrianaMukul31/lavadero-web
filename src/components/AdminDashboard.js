@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import api from '../services/api';
-import { COLORS, FONTS, CARDS, BUTTONS } from '../styles/theme';
+import { COLORS, FONTS, CARDS } from '../styles/theme';
 
 const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
