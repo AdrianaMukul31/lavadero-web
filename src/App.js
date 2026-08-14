@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Login from './components/Login';
 import Registro from './components/Registro';
 import Home from './components/Home';
@@ -37,17 +38,19 @@ function App() {
     setMenuAbierto(false);
   };
 
+  // Si está en registro, muestra solo ese componente
   if (mostrarRegistro) {
     return <Registro onRegistro={handleLogin} onVolver={() => setMostrarRegistro(false)} />;
   }
 
+  // Si no hay usuario, muestra el login
   if (!user) {
     return <Login onLogin={handleLogin} onRegistro={() => setMostrarRegistro(true)} />;
   }
 
   const isAdmin = user.rol === 'admin';
 
-  // Renderizar botones del menú según rol
+  // Renderizar botones del menú lateral según rol
   const renderMenuItems = () => {
     if (!isAdmin) {
       return (
@@ -92,7 +95,7 @@ function App() {
     );
   };
 
-  // Renderizar botones del nav (escritorio) según rol
+  // Renderizar botones del navbar (escritorio) según rol
   const renderNavButtons = () => {
     if (!isAdmin) {
       return (
@@ -137,9 +140,12 @@ function App() {
     );
   };
 
+  // ============================================
+  // RENDER PRINCIPAL CON ANIMACIONES
+  // ============================================
   return (
     <div>
-      {/* Overlay (fondo oscuro) */}
+      {/* Overlay del menú lateral */}
       <div className={`menu-overlay ${menuAbierto ? 'open' : ''}`} onClick={() => setMenuAbierto(false)} />
 
       {/* Menú lateral (móvil) */}
@@ -156,7 +162,7 @@ function App() {
         </button>
       </div>
 
-      {/* Navbar */}
+      {/* Navbar principal */}
       <nav className="navbar">
         <div className="nav-container">
           <div className="nav-title">
@@ -169,7 +175,7 @@ function App() {
             ☰
           </button>
 
-          {/* Menú escritorio */}
+          {/* Menú de escritorio */}
           <div className="nav-links">
             {renderNavButtons()}
             <button className="logout-btn" onClick={handleLogout}>
@@ -179,20 +185,33 @@ function App() {
         </div>
       </nav>
 
-      {/* Contenido */}
-      <div className="app-container">
-        {!isAdmin && vista === 'home' && <Home user={user} />}
-        {!isAdmin && vista === 'mis-citas' && <MisCitas />}
-        {!isAdmin && vista === 'editar-perfil' && <EditarPerfil user={user} onPerfilActualizado={setUser} />}
+      {/* Contenido con animaciones de transición */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={vista} // importante para que AnimatePresence detecte el cambio
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.35, ease: 'easeOut' }}
+          className="app-container"
+        >
+          {/* Vistas para clientes */}
+          {!isAdmin && vista === 'home' && <Home user={user} />}
+          {!isAdmin && vista === 'mis-citas' && <MisCitas />}
+          {!isAdmin && vista === 'editar-perfil' && (
+            <EditarPerfil user={user} onPerfilActualizado={setUser} />
+          )}
 
-        {isAdmin && vista === 'admin-dashboard' && <AdminDashboard />}
-        {isAdmin && vista === 'admin-clientes' && <AdminClientes />}
-        {isAdmin && vista === 'admin-vehiculos' && <AdminVehiculos />}
-        {isAdmin && vista === 'admin-citas' && <AdminCitas />}
-        {isAdmin && vista === 'admin-servicios' && <AdminServicios />}
-        {isAdmin && vista === 'admin-horarios' && <AdminHorarios />}
-        {isAdmin && vista === 'admin-limites' && <AdminLimites />}
-      </div>
+          {/* Vistas para administradores */}
+          {isAdmin && vista === 'admin-dashboard' && <AdminDashboard />}
+          {isAdmin && vista === 'admin-clientes' && <AdminClientes />}
+          {isAdmin && vista === 'admin-vehiculos' && <AdminVehiculos />}
+          {isAdmin && vista === 'admin-citas' && <AdminCitas />}
+          {isAdmin && vista === 'admin-servicios' && <AdminServicios />}
+          {isAdmin && vista === 'admin-horarios' && <AdminHorarios />}
+          {isAdmin && vista === 'admin-limites' && <AdminLimites />}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

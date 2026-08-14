@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { motion } from 'framer-motion';
+import { FaCar, FaWater, FaShieldAlt, FaClock, FaStar, FaArrowRight } from 'react-icons/fa';
 import api from '../services/api';
 import Toast from './Toast';
 import Loader from './Loader';
@@ -11,6 +13,27 @@ const Home = ({ user }) => {
   const [servicioSeleccionado, setServicioSeleccionado] = useState(null);
   const [filtroVehiculo, setFiltroVehiculo] = useState('todos');
 
+  // ==========================================
+  // ANIMACIONES
+  // ==========================================
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+  };
+
+  const staggerContainer = {
+    visible: { transition: { staggerChildren: 0.15 } }
+  };
+
+  const cardHover = {
+    scale: 1.03,
+    boxShadow: '0 12px 30px rgba(106,13,173,0.2)',
+    transition: { duration: 0.3 }
+  };
+
+  // ==========================================
+  // FUNCIONES
+  // ==========================================
   const cargarServicios = useCallback(async () => {
     try {
       const params = filtroVehiculo !== 'todos' ? `?tipo_vehiculo=${filtroVehiculo}` : '';
@@ -42,88 +65,216 @@ const Home = ({ user }) => {
     setServicioSeleccionado(null);
   };
 
+  // ==========================================
+  // RENDER ADMIN
+  // ==========================================
   if (user?.rol === 'admin') {
     return (
       <div style={styles.container}>
         <div style={styles.headerSimple}>
           <h3 style={styles.welcomeText}>👋 Bienvenido, <strong>{user?.nombre || 'Usuario'}</strong></h3>
         </div>
-        <div style={styles.adminMessage}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          style={styles.adminMessage}
+        >
           <h2 style={styles.adminTitle}>⛔ Acceso Restringido</h2>
           <p style={styles.adminText}>Los administradores no pueden agendar citas.</p>
           <p style={styles.adminSubtext}>Usa el panel de administrador para gestionar las citas de los clientes.</p>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
+  // ==========================================
+  // RENDER PRINCIPAL (CLIENTE)
+  // ==========================================
   return (
     <div style={styles.container}>
-      <div style={styles.headerSimple}>
-        <h3 style={styles.welcomeText}>👋 Bienvenido, <strong>{user?.nombre || 'Usuario'}</strong></h3>
-      </div>
-
-      <main style={styles.main}>
-        {!mostrarAgendar ? (
-          <div>
-            <h3 style={styles.sectionTitle}>Nuestros Servicios</h3>
-            <p style={styles.subtitle}>Selecciona un servicio para agendar</p>
-
-            <div style={styles.filtros}>
-              <label style={styles.filtroLabel}>🚗 Filtrar por vehículo:</label>
-              <select 
-                value={filtroVehiculo} 
-                onChange={(e) => setFiltroVehiculo(e.target.value)}
-                style={styles.selectFiltro}
-              >
-                <option value="todos">🚗 Todos los servicios</option>
-                <option value="coche">🚗 Coche</option>
-                <option value="camioneta">🚙 Camioneta</option>
-                <option value="furgoneta">🚐 Furgoneta</option>
-                <option value="motocicleta">🏍️ Motocicleta</option>
-              </select>
-            </div>
-
-            {loading ? (
-              <Loader />
-            ) : servicios.length === 0 ? (
-              <p style={styles.sinServicios}>No hay servicios disponibles para este tipo de vehículo.</p>
-            ) : (
-              <div style={styles.grid}>
-                {servicios.map((item) => (
-                  <div key={item.id} style={styles.card}>
-                    <h4 style={styles.cardTitle}>{item.nombre}</h4>
-                    <p style={styles.cardDesc}>{item.descripcion}</p>
-                    <p style={styles.cardPrice}>${item.precio}</p>
-                    <p style={styles.cardTime}>⏱️ {item.tiempo_base_minutos} min</p>
-                    {item.tipo_vehiculo && item.tipo_vehiculo !== 'todos' && (
-                      <p style={styles.cardTipo}>🚗 {item.tipo_vehiculo}</p>
-                    )}
-                    <button 
-                      onClick={() => seleccionarServicio(item)} 
-                      style={styles.agendarBtn}
-                    >
-                      📅 Agendar
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        ) : (
-          <AgendarCita 
-            servicio={servicioSeleccionado} 
-            user={user} 
-            onVolver={volver} 
+      {/* HERO SECTION */}
+      <motion.section
+        initial="hidden"
+        animate="visible"
+        variants={fadeInUp}
+        style={styles.hero}
+      >
+        <div style={styles.heroContent}>
+          <motion.h1 style={styles.heroTitle} variants={fadeInUp}>
+            <span style={{ color: COLORS.primary }}>HI</span>
+            <span style={{ color: COLORS.silver }}> PERFORMANCE</span>
+          </motion.h1>
+          <motion.p style={styles.heroSubtitle} variants={fadeInUp}>
+            Tu vehículo merece brillar.<br />
+            Reservá tu turno en segundos.
+          </motion.p>
+          <motion.div style={styles.heroButtons} variants={fadeInUp}>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              style={styles.btnPrimary}
+              onClick={() => document.getElementById('servicios').scrollIntoView({ behavior: 'smooth' })}
+            >
+              Reservar Turno <FaArrowRight style={{ marginLeft: '8px' }} />
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              style={styles.btnOutline}
+              onClick={() => document.getElementById('servicios').scrollIntoView({ behavior: 'smooth' })}
+            >
+              Ver Servicios
+            </motion.button>
+          </motion.div>
+        </div>
+        <motion.div
+          style={styles.heroImage}
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <img
+            src="https://images.unsplash.com/photo-1601362840469-51e4d8d58785?w=600"
+            alt="Coche brillante"
+            style={styles.heroImg}
           />
+        </motion.div>
+      </motion.section>
+
+      {/* SECCIÓN DE SERVICIOS */}
+      <motion.section
+        id="servicios"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={staggerContainer}
+        style={styles.section}
+      >
+        <motion.h2 variants={fadeInUp} style={styles.sectionTitle}>Nuestros Servicios</motion.h2>
+        <motion.p variants={fadeInUp} style={styles.sectionSub}>
+          Cuidamos cada detalle de tu vehículo con productos de primera calidad.
+        </motion.p>
+
+        {/* FILTRO */}
+        <motion.div variants={fadeInUp} style={styles.filtros}>
+          <label style={styles.filtroLabel}>🚗 Filtrar por vehículo:</label>
+          <select
+            value={filtroVehiculo}
+            onChange={(e) => setFiltroVehiculo(e.target.value)}
+            style={styles.selectFiltro}
+          >
+            <option value="todos">🚗 Todos los servicios</option>
+            <option value="coche">🚗 Coche</option>
+            <option value="camioneta">🚙 Camioneta</option>
+            <option value="furgoneta">🚐 Furgoneta</option>
+            <option value="motocicleta">🏍️ Motocicleta</option>
+          </select>
+        </motion.div>
+
+        {loading ? (
+          <Loader />
+        ) : servicios.length === 0 ? (
+          <p style={styles.sinServicios}>No hay servicios disponibles para este tipo de vehículo.</p>
+        ) : (
+          <motion.div
+            variants={staggerContainer}
+            style={styles.grid}
+          >
+            {servicios.map((item, index) => {
+              const icons = [<FaWater />, <FaShieldAlt />, <FaStar />];
+              return (
+                <motion.div
+                  key={item.id}
+                  variants={fadeInUp}
+                  whileHover={cardHover}
+                  style={styles.card}
+                >
+                  <div style={styles.serviceIcon}>
+                    {icons[index % icons.length]}
+                  </div>
+                  <h4 style={styles.cardTitle}>{item.nombre}</h4>
+                  <p style={styles.cardDesc}>{item.descripcion}</p>
+                  <p style={styles.cardPrice}>${item.precio}</p>
+                  <p style={styles.cardTime}>⏱️ {item.tiempo_base_minutos} min</p>
+                  {item.tipo_vehiculo && item.tipo_vehiculo !== 'todos' && (
+                    <p style={styles.cardTipo}>🚗 {item.tipo_vehiculo}</p>
+                  )}
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => seleccionarServicio(item)}
+                    style={styles.agendarBtn}
+                  >
+                    📅 Agendar
+                  </motion.button>
+                </motion.div>
+              );
+            })}
+          </motion.div>
         )}
-      </main>
+      </motion.section>
+
+      {/* BENEFICIOS */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={staggerContainer}
+        style={styles.benefitsSection}
+      >
+        <div style={styles.benefitsGrid}>
+          <motion.div variants={fadeInUp} style={styles.benefitItem}>
+            <FaClock size={40} color={COLORS.primary} />
+            <h4>Reserva en 1 minuto</h4>
+            <p>Agendá tu turno de forma rápida y sencilla.</p>
+          </motion.div>
+          <motion.div variants={fadeInUp} style={styles.benefitItem}>
+            <FaWater size={40} color={COLORS.secondary} />
+            <h4>Productos premium</h4>
+            <p>Utilizamos los mejores productos para tu vehículo.</p>
+          </motion.div>
+          <motion.div variants={fadeInUp} style={styles.benefitItem}>
+            <FaShieldAlt size={40} color={COLORS.silverDark} />
+            <h4>Acabado impecable</h4>
+            <p>Dejamos tu coche como nuevo, con brillo y protección.</p>
+          </motion.div>
+        </div>
+      </motion.section>
+
+      {/* CTA FINAL */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        style={styles.ctaSection}
+      >
+        <h2 style={styles.ctaTitle}>¿Listo para que tu coche brille?</h2>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          style={styles.btnPrimary}
+          onClick={() => document.getElementById('servicios').scrollIntoView({ behavior: 'smooth' })}
+        >
+          Reservar Turno Ahora
+        </motion.button>
+      </motion.div>
+
+      {/* AGENDAR CITA (OVERLAY) */}
+      {mostrarAgendar && (
+        <AgendarCita
+          servicio={servicioSeleccionado}
+          user={user}
+          onVolver={volver}
+        />
+      )}
     </div>
   );
 };
 
 // ==========================================
-// COMPONENTE AGENDAR CITA
+// COMPONENTE AGENDAR CITA (MEJORADO)
 // ==========================================
 const AgendarCita = ({ servicio, user, onVolver }) => {
   const [fecha, setFecha] = useState('');
@@ -184,9 +335,9 @@ const AgendarCita = ({ servicio, user, onVolver }) => {
       );
 
       if (!disponibilidadResponse.data.disponible) {
-        setToast({ 
-          message: `❌ No hay cupo disponible para ${tipoVehiculo} en esta fecha.`, 
-          type: 'error' 
+        setToast({
+          message: `❌ No hay cupo disponible para ${tipoVehiculo} en esta fecha.`,
+          type: 'error'
         });
         setCargando(false);
         return;
@@ -220,23 +371,14 @@ const AgendarCita = ({ servicio, user, onVolver }) => {
   const cambiarMes = (incremento) => {
     let mes = mesActual + incremento;
     let año = añoActual;
-    
-    if (mes > 12) {
-      mes = 1;
-      año++;
-    } else if (mes < 1) {
-      mes = 12;
-      año--;
-    }
-    
+    if (mes > 12) { mes = 1; año++; }
+    else if (mes < 1) { mes = 12; año--; }
     setMesActual(mes);
     setAñoActual(año);
   };
 
   const renderCalendario = () => {
-    if (cargandoDias) {
-      return <Loader message="Cargando días disponibles..." />;
-    }
+    if (cargandoDias) return <Loader message="Cargando días disponibles..." />;
 
     const fechasDisponibles = diasDisponibles.map(d => d.fecha);
     const diasEnMes = new Date(añoActual, mesActual, 0).getDate();
@@ -257,17 +399,15 @@ const AgendarCita = ({ servicio, user, onVolver }) => {
           {diasSemana.map(d => (
             <div key={d} style={styles.calendarioDiaSemana}>{d}</div>
           ))}
-          
           {Array.from({ length: primerDiaSemana }).map((_, i) => (
             <div key={`empty-${i}`} style={styles.calendarioDiaVacio} />
           ))}
-          
           {Array.from({ length: diasEnMes }).map((_, i) => {
             const dia = i + 1;
             const fechaStr = `${añoActual}-${String(mesActual).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
             const disponible = fechasDisponibles.includes(fechaStr);
             const seleccionado = fecha === fechaStr;
-            
+
             return (
               <div
                 key={dia}
@@ -296,25 +436,30 @@ const AgendarCita = ({ servicio, user, onVolver }) => {
             📅 Fecha seleccionada: {new Date(fecha).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
         )}
-
         {errorFecha && <p style={styles.error}>{errorFecha}</p>}
       </div>
     );
   };
 
   return (
-    <div>
-      <button onClick={onVolver} style={styles.volverBtn}>← Volver</button>
-      
-      {toast && (
-        <Toast 
-          message={toast.message} 
-          type={toast.type} 
-          onClose={() => setToast(null)} 
-        />
-      )}
-      
-      <div style={styles.cardAgendar}>
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 50 }}
+      style={styles.modalOverlay}
+      onClick={onVolver}
+    >
+      <motion.div
+        style={styles.cardAgendar}
+        onClick={(e) => e.stopPropagation()}
+        initial={{ scale: 0.9 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <button onClick={onVolver} style={styles.volverBtn}>← Volver</button>
+
+        {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+
         <h2 style={styles.agendarTitle}>📅 Agendar Cita</h2>
         <p><strong>Servicio:</strong> {servicio?.nombre}</p>
         <p><strong>Precio:</strong> ${servicio?.precio}</p>
@@ -322,8 +467,8 @@ const AgendarCita = ({ servicio, user, onVolver }) => {
 
         <div style={styles.formGroup}>
           <label style={styles.formLabel}>Tipo de Vehículo:</label>
-          <select 
-            value={tipoVehiculo} 
+          <select
+            value={tipoVehiculo}
             onChange={(e) => setTipoVehiculo(e.target.value)}
             style={styles.input}
           >
@@ -356,8 +501,8 @@ const AgendarCita = ({ servicio, user, onVolver }) => {
           <p style={styles.error}>No hay horas disponibles para esta fecha</p>
         )}
 
-        <button 
-          onClick={handleAgendar} 
+        <button
+          onClick={handleAgendar}
           style={{
             ...styles.confirmarBtn,
             ...((!fecha || !hora || cargando) ? styles.confirmarBtnDisabled : {})
@@ -366,11 +511,14 @@ const AgendarCita = ({ servicio, user, onVolver }) => {
         >
           {cargando ? '⏳ Guardando...' : '✅ Confirmar Cita'}
         </button>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
+// ==========================================
+// ESTILOS (MEJORADOS)
+// ==========================================
 const styles = {
   container: {
     minHeight: '100vh',
@@ -406,25 +554,99 @@ const styles = {
     color: COLORS.textGray,
     marginTop: '10px',
   },
-  main: {
-    padding: '0 30px 30px 30px',
+  // HERO
+  hero: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '60px 40px',
+    background: 'linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%)',
+    minHeight: '60vh',
+    flexWrap: 'wrap',
+  },
+  heroContent: {
+    flex: 1,
+    minWidth: '280px',
+  },
+  heroTitle: {
+    fontSize: '3.5rem',
+    fontWeight: 'bold',
+    letterSpacing: '2px',
+    marginBottom: '20px',
+    lineHeight: 1.2,
+  },
+  heroSubtitle: {
+    fontSize: '1.3rem',
+    color: '#4B5563',
+    marginBottom: '30px',
+    lineHeight: 1.6,
+  },
+  heroButtons: {
+    display: 'flex',
+    gap: '15px',
+    flexWrap: 'wrap',
+  },
+  btnPrimary: {
+    backgroundColor: COLORS.primary,
+    color: '#fff',
+    border: 'none',
+    padding: '14px 30px',
+    borderRadius: '50px',
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    boxShadow: `0 4px 15px rgba(106,13,173,0.3)`,
+  },
+  btnOutline: {
+    backgroundColor: 'transparent',
+    color: COLORS.primary,
+    border: `2px solid ${COLORS.primary}`,
+    padding: '12px 28px',
+    borderRadius: '50px',
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+  },
+  heroImage: {
+    flex: 1,
+    minWidth: '280px',
+    display: 'flex',
+    justifyContent: 'center',
+  },
+  heroImg: {
+    width: '100%',
+    maxWidth: '500px',
+    borderRadius: '20px',
+    boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
+  },
+  // SECCIÓN SERVICIOS
+  section: {
+    padding: '60px 40px',
     maxWidth: '1200px',
     margin: '0 auto',
   },
   sectionTitle: {
     ...FONTS.title,
-    marginBottom: '5px',
+    textAlign: 'center',
+    marginBottom: '10px',
   },
-  subtitle: {
+  sectionSub: {
     ...FONTS.small,
     color: COLORS.textGray,
-    marginBottom: '20px',
+    textAlign: 'center',
+    marginBottom: '40px',
   },
   filtros: {
     display: 'flex',
     alignItems: 'center',
     gap: '15px',
-    marginBottom: '20px',
+    marginBottom: '30px',
     flexWrap: 'wrap',
   },
   filtroLabel: {
@@ -446,12 +668,19 @@ const styles = {
   grid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-    gap: '20px',
+    gap: '30px',
     marginTop: '20px',
   },
   card: {
     ...CARDS.default,
-    padding: '20px',
+    padding: '25px 20px',
+    textAlign: 'center',
+    transition: 'all 0.3s ease',
+  },
+  serviceIcon: {
+    fontSize: '2rem',
+    marginBottom: '10px',
+    color: COLORS.primary,
   },
   cardTitle: {
     ...FONTS.subtitle,
@@ -484,16 +713,58 @@ const styles = {
     width: '100%',
     marginTop: '15px',
     textAlign: 'center',
+    borderRadius: '50px',
   },
-  volverBtn: {
-    ...BUTTONS.outline,
+  // BENEFICIOS
+  benefitsSection: {
+    padding: '40px 20px',
+    backgroundColor: COLORS.white,
+  },
+  benefitsGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+    gap: '30px',
+    maxWidth: '1200px',
+    margin: '0 auto',
+  },
+  benefitItem: {
+    textAlign: 'center',
+    padding: '20px',
+  },
+  // CTA
+  ctaSection: {
+    padding: '60px 20px',
+    textAlign: 'center',
+    background: `linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.primaryDark} 100%)`,
+    color: '#fff',
+  },
+  ctaTitle: {
+    fontSize: '2rem',
     marginBottom: '20px',
+  },
+  // AGENDAR MODAL
+  modalOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    backdropFilter: 'blur(4px)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+    padding: '20px',
   },
   cardAgendar: {
     ...CARDS.default,
     maxWidth: '500px',
-    margin: '0 auto',
+    width: '100%',
     padding: '30px',
+    maxHeight: '90vh',
+    overflowY: 'auto',
+    backgroundColor: COLORS.white,
   },
   agendarTitle: {
     ...FONTS.title,
@@ -519,6 +790,7 @@ const styles = {
     width: '100%',
     marginTop: '10px',
     textAlign: 'center',
+    borderRadius: '50px',
   },
   confirmarBtnDisabled: {
     backgroundColor: COLORS.silverDark,
@@ -533,8 +805,11 @@ const styles = {
     backgroundColor: '#FEE2E2',
     borderRadius: '8px',
   },
-  
-  // Calendario
+  volverBtn: {
+    ...BUTTONS.outline,
+    marginBottom: '20px',
+  },
+  // CALENDARIO
   calendarioContainer: {
     ...CARDS.default,
     padding: '15px',
@@ -586,9 +861,6 @@ const styles = {
     backgroundColor: '#e8f5e9',
     color: '#2e7d32',
     cursor: 'pointer',
-    '&:hover': {
-      backgroundColor: '#c8e6c9',
-    },
   },
   calendarioDiaNoDisponible: {
     backgroundColor: '#f5f5f5',
