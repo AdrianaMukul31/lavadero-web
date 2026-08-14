@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { FaCar, FaWater, FaShieldAlt, FaClock, FaStar, FaArrowRight } from 'react-icons/fa';
+import { FaWater, FaShieldAlt, FaClock, FaStar, FaArrowRight } from 'react-icons/fa';
 import api from '../services/api';
 import Toast from './Toast';
 import Loader from './Loader';
