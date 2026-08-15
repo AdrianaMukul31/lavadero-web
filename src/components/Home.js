@@ -8,7 +8,6 @@ import { COLORS, FONTS, CARDS, INPUTS, BUTTONS } from '../styles/theme';
 
 const Home = ({ user }) => {
   const [servicios, setServicios] = useState([]);
-  const [serviciosFiltrados, setServiciosFiltrados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [mostrarAgendar, setMostrarAgendar] = useState(false);
   const [servicioSeleccionado, setServicioSeleccionado] = useState(null);
@@ -35,13 +34,12 @@ const Home = ({ user }) => {
   // ==========================================
   // FUNCIONES
   // ==========================================
-  // 🔥 CAMBIO: siempre carga TODOS los servicios (sin filtro)
   const cargarServicios = useCallback(async () => {
     try {
       setLoading(true);
-      console.log('🔍 Cargando servicios (cliente) sin filtro...');
+      // 🔥 Siempre pide TODOS los servicios (sin filtro) para que el cliente vea lo mismo que el admin
       const response = await api.get('/servicios');
-      console.log('✅ Servicios recibidos:', response.data);
+      console.log('✅ Servicios cargados en cliente:', response.data);
       setServicios(response.data);
     } catch (error) {
       console.error('❌ Error al cargar servicios:', error);
@@ -51,26 +49,18 @@ const Home = ({ user }) => {
     }
   }, []);
 
-  // Carga inicial
+  // ==========================================
+  // useEffect CORREGIDO (con todas las dependencias)
+  // ==========================================
   useEffect(() => {
-    console.log('👤 user en Home:', user);
+    console.log('👤 Usuario en Home:', user);
+    // Solo cargar si NO es admin
     if (user?.rol !== 'admin') {
       cargarServicios();
     } else {
       setLoading(false);
     }
-  }, [cargarServicios, user?.rol]);
-
-  // Filtrado local (cuando cambia el filtro o los servicios)
-  useEffect(() => {
-    if (filtroVehiculo === 'todos') {
-      setServiciosFiltrados(servicios);
-    } else {
-      setServiciosFiltrados(
-        servicios.filter(s => s.tipo_vehiculo === filtroVehiculo)
-      );
-    }
-  }, [filtroVehiculo, servicios]);
+  }, [cargarServicios, user]); // ✅ Ahora 'user' está incluido
 
   const seleccionarServicio = (servicio) => {
     setServicioSeleccionado(servicio);
@@ -191,14 +181,14 @@ const Home = ({ user }) => {
 
         {loading ? (
           <Loader />
-        ) : serviciosFiltrados.length === 0 ? (
+        ) : servicios.length === 0 ? (
           <p style={styles.sinServicios}>No hay servicios disponibles para este tipo de vehículo.</p>
         ) : (
           <motion.div
             variants={staggerContainer}
             style={styles.grid}
           >
-            {serviciosFiltrados.map((item, index) => {
+            {servicios.map((item, index) => {
               const icons = [<FaWater />, <FaShieldAlt />, <FaStar />];
               return (
                 <motion.div
