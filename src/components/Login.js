@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { FaEnvelope, FaLock, FaArrowRight } from 'react-icons/fa';
 import api from '../services/api';
 import Logo from './Logo';
 
@@ -32,129 +30,55 @@ const Login = ({ onLogin, onRegistro }) => {
     }
   };
 
-  // ==========================================
-  // ANIMACIONES
-  // ==========================================
-  const cardVariants = {
-    hidden: { opacity: 0, y: 50, scale: 0.95 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      scale: 1,
-      transition: { 
-        duration: 0.6,
-        ease: "easeOut",
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
-  };
-
   return (
     <div style={styles.container}>
-      <motion.div
-        style={styles.card}
-        initial="hidden"
-        animate="visible"
-        variants={cardVariants}
-      >
-        <motion.div 
-          style={styles.logoWrapper}
-          variants={itemVariants}
-        >
+      <div style={styles.card}>
+        <div style={styles.logoWrapper}>
           <Logo size="xlarge" showText={true} />
-        </motion.div>
+        </div>
         
-        <motion.h2 
-          style={styles.subtitle}
-          variants={itemVariants}
-        >
-          Iniciar Sesión
-        </motion.h2>
+        <h2 style={styles.subtitle}>Iniciar Sesión</h2>
 
-        {error && (
-          <motion.p 
-            style={styles.error}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {error}
-          </motion.p>
-        )}
+        {error && <p style={styles.error}>{error}</p>}
 
         <form onSubmit={handleSubmit}>
-          <motion.div 
-            style={styles.inputWrapper}
-            variants={itemVariants}
-          >
-            <FaEnvelope style={styles.inputIcon} />
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={styles.input}
-              required
-            />
-          </motion.div>
-
-          <motion.div 
-            style={styles.inputWrapper}
-            variants={itemVariants}
-          >
-            <FaLock style={styles.inputIcon} />
-            <input
-              type="password"
-              placeholder="Contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={styles.input}
-              required
-            />
-          </motion.div>
-
-          <motion.button
-            type="submit"
-            style={styles.button}
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={styles.input}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={styles.input}
+            required
+          />
+          <button 
+            type="submit" 
+            style={styles.button} 
             disabled={loading}
-            variants={itemVariants}
-            whileHover={{ scale: 1.02, boxShadow: '0 8px 30px rgba(106, 13, 173, 0.4)' }}
-            whileTap={{ scale: 0.98 }}
           >
             {loading ? 'Cargando...' : 'Iniciar Sesión'}
-            {!loading && <FaArrowRight style={{ marginLeft: '10px' }} />}
-          </motion.button>
+          </button>
         </form>
 
-        <motion.button
-          onClick={onRegistro}
-          style={styles.registroBtn}
-          variants={itemVariants}
-          whileHover={{ scale: 1.02, backgroundColor: '#6A0DAD', color: '#FFFFFF' }}
-          whileTap={{ scale: 0.98 }}
-        >
+        <button onClick={onRegistro} style={styles.registroBtn}>
           ¿No tienes cuenta? Regístrate
-        </motion.button>
+        </button>
 
-        <motion.p 
-          style={styles.demo}
-          variants={itemVariants}
-        >
-          Admin: admin@hiperformance.com / admin123
-        </motion.p>
-      </motion.div>
+        <p style={styles.demo}>
+          Admin: fijo@correo.com / 123456
+        </p>
+      </div>
     </div>
   );
 };
 
-// ==========================================
-// ESTILOS (MEJORADOS)
-// ==========================================
 const styles = {
   container: {
     minHeight: '100vh',
@@ -163,18 +87,6 @@ const styles = {
     alignItems: 'center',
     background: 'linear-gradient(135deg, #4A0A7A 0%, #6A0DAD 50%, #8B5CF6 100%)',
     padding: '20px',
-    position: 'relative',
-  },
-  // Fondo con patrón de puntos sutiles
-  containerBefore: {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
-    pointerEvents: 'none',
   },
   card: {
     backgroundColor: 'rgba(255, 255, 255, 0.97)',
@@ -200,32 +112,11 @@ const styles = {
     color: '#6A0DAD',
     fontWeight: '700',
     letterSpacing: '0.5px',
-    position: 'relative',
-  },
-  subtitleAfter: {
-    content: '""',
-    display: 'block',
-    width: '60px',
-    height: '3px',
-    background: 'linear-gradient(90deg, #6A0DAD, #22C55E)',
-    margin: '8px auto 0',
-    borderRadius: '2px',
-  },
-  inputWrapper: {
-    position: 'relative',
-    marginBottom: '16px',
-  },
-  inputIcon: {
-    position: 'absolute',
-    left: '14px',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    color: '#9CA3AF',
-    fontSize: '18px',
   },
   input: {
     width: '100%',
-    padding: '14px 16px 14px 46px',
+    padding: '14px 16px',
+    marginBottom: '16px',
     borderRadius: '10px',
     border: '2px solid #E5E7EB',
     fontSize: '16px',
@@ -233,11 +124,6 @@ const styles = {
     transition: 'all 0.3s ease',
     backgroundColor: '#FFFFFF',
     color: '#1F2937',
-    outline: 'none',
-  },
-  inputFocus: {
-    borderColor: '#6A0DAD',
-    boxShadow: '0 0 0 4px rgba(106, 13, 173, 0.12)',
     outline: 'none',
   },
   button: {
@@ -253,15 +139,6 @@ const styles = {
     transition: 'all 0.3s ease',
     marginTop: '8px',
     letterSpacing: '0.5px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-  },
-  buttonDisabled: {
-    opacity: 0.7,
-    cursor: 'not-allowed',
-    transform: 'none !important',
   },
   registroBtn: {
     width: '100%',
