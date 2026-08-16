@@ -12,7 +12,6 @@ const Home = ({ user }) => {
   const [mostrarAgendar, setMostrarAgendar] = useState(false);
   const [servicioSeleccionado, setServicioSeleccionado] = useState(null);
   const [filtroVehiculo, setFiltroVehiculo] = useState('todos');
-  const [error, setError] = useState(null);
 
   // ==========================================
   // ANIMACIONES
@@ -37,42 +36,24 @@ const Home = ({ user }) => {
   // ==========================================
   const cargarServicios = useCallback(async () => {
     try {
-      setLoading(true);
-      setError(null);
-      console.log('🔍 Haciendo petición a /servicios (sin /public)...');
-      console.log('🔑 Token en localStorage:', localStorage.getItem('token') ? '✅ Presente' : '❌ No hay token');
-      
-      // 🔥 USAR /servicios (NO /public) porque ya es público
-      const response = await api.get('/servicios');
-      console.log('📦 Respuesta completa:', response);
-      console.log('✅ Servicios recibidos:', response.data);
-      console.log(`📊 Cantidad de servicios: ${response.data.length}`);
-      
+      const params = filtroVehiculo !== 'todos' ? `?tipo_vehiculo=${filtroVehiculo}` : '';
+      const response = await api.get(`/servicios${params}`);
       setServicios(response.data);
     } catch (error) {
-      console.error('❌ Error al cargar servicios:', error);
-      console.error('🔍 Detalles del error:', error.response || error.message);
-      setError(`Error al cargar servicios: ${error.response?.status || error.message}`);
+      console.error('Error al cargar servicios:', error);
+      alert('Error al cargar servicios');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [filtroVehiculo]);
 
-  // ==========================================
-  // useEffect CORREGIDO
-  // ==========================================
   useEffect(() => {
-    console.log('👤 Usuario en Home:', user);
-    console.log(`🔑 Rol del usuario: ${user?.rol}`);
-    
     if (user?.rol !== 'admin') {
-      console.log('🔄 Cargando servicios para cliente...');
       cargarServicios();
     } else {
-      console.log('⛔ Usuario admin, no se cargan servicios');
       setLoading(false);
     }
-  }, [cargarServicios, user]);
+  }, [cargarServicios, user?.rol]);
 
   const seleccionarServicio = (servicio) => {
     setServicioSeleccionado(servicio);
@@ -191,33 +172,10 @@ const Home = ({ user }) => {
           </select>
         </motion.div>
 
-        {error && (
-          <div style={{ ...styles.error, marginBottom: '20px' }}>
-            <strong>⚠️ Error:</strong> {error}
-            <button 
-              onClick={() => cargarServicios()} 
-              style={{ marginLeft: '10px', padding: '5px 15px', background: COLORS.primary, color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
-            >
-              Reintentar
-            </button>
-          </div>
-        )}
-
         {loading ? (
           <Loader />
         ) : servicios.length === 0 ? (
-          <div style={styles.sinServicios}>
-            <p>No hay servicios disponibles.</p>
-            <p style={{ fontSize: '14px', color: COLORS.silverDark }}>
-              {error ? 'Intenta recargar la página o contacta al administrador.' : 'Probablemente no hay servicios creados aún.'}
-            </p>
-            <button 
-              onClick={() => cargarServicios()} 
-              style={{ marginTop: '10px', padding: '8px 20px', background: COLORS.primary, color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
-            >
-              Recargar servicios
-            </button>
-          </div>
+          <p style={styles.sinServicios}>No hay servicios disponibles para este tipo de vehículo.</p>
         ) : (
           <motion.div
             variants={staggerContainer}
