@@ -39,11 +39,11 @@ const Home = ({ user }) => {
     try {
       setLoading(true);
       setError(null);
-      console.log('🔍 Haciendo petición a /servicios/public...');
+      console.log('🔍 Haciendo petición a /servicios (sin /public)...');
       console.log('🔑 Token en localStorage:', localStorage.getItem('token') ? '✅ Presente' : '❌ No hay token');
       
-      // 🔥 CAMBIO IMPORTANTE: usa el endpoint PÚBLICO
-      const response = await api.get('/servicios/public');
+      // 🔥 USAR /servicios (NO /public) porque ya es público
+      const response = await api.get('/servicios');
       console.log('📦 Respuesta completa:', response);
       console.log('✅ Servicios recibidos:', response.data);
       console.log(`📊 Cantidad de servicios: ${response.data.length}`);
