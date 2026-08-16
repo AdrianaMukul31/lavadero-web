@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { motion } from 'framer-motion';
+import { FaWater, FaShieldAlt, FaClock, FaStar, FaArrowRight } from 'react-icons/fa';
 import api from '../services/api';
 import Toast from './Toast';
 import Loader from './Loader';
@@ -10,15 +12,39 @@ const Home = ({ user }) => {
   const [mostrarAgendar, setMostrarAgendar] = useState(false);
   const [servicioSeleccionado, setServicioSeleccionado] = useState(null);
   const [filtroVehiculo, setFiltroVehiculo] = useState('todos');
+  const [error, setError] = useState(null);
 
+  // ==========================================
+  // ANIMACIONES
+  // ==========================================
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  };
+
+  const staggerContainer = {
+    visible: { transition: { staggerChildren: 0.12 } }
+  };
+
+  const cardHover = {
+    scale: 1.03,
+    boxShadow: '0 20px 60px rgba(106,13,173,0.25)',
+    transition: { duration: 0.3, ease: "easeOut" }
+  };
+
+  // ==========================================
+  // FUNCIONES
+  // ==========================================
   const cargarServicios = useCallback(async () => {
     try {
+      setLoading(true);
+      setError(null);
       const params = filtroVehiculo !== 'todos' ? `?tipo_vehiculo=${filtroVehiculo}` : '';
       const response = await api.get(`/servicios${params}`);
       setServicios(response.data);
     } catch (error) {
       console.error('Error al cargar servicios:', error);
-      alert('Error al cargar servicios');
+      setError('Error al cargar servicios. Intenta de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -42,88 +68,225 @@ const Home = ({ user }) => {
     setServicioSeleccionado(null);
   };
 
+  // ==========================================
+  // RENDER ADMIN
+  // ==========================================
   if (user?.rol === 'admin') {
     return (
       <div style={styles.container}>
         <div style={styles.headerSimple}>
           <h3 style={styles.welcomeText}>👋 Bienvenido, <strong>{user?.nombre || 'Usuario'}</strong></h3>
         </div>
-        <div style={styles.adminMessage}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          style={styles.adminMessage}
+        >
           <h2 style={styles.adminTitle}>⛔ Acceso Restringido</h2>
           <p style={styles.adminText}>Los administradores no pueden agendar citas.</p>
           <p style={styles.adminSubtext}>Usa el panel de administrador para gestionar las citas de los clientes.</p>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
+  // ==========================================
+  // RENDER PRINCIPAL (CLIENTE)
+  // ==========================================
   return (
     <div style={styles.container}>
-      <div style={styles.headerSimple}>
-        <h3 style={styles.welcomeText}>👋 Bienvenido, <strong>{user?.nombre || 'Usuario'}</strong></h3>
-      </div>
-
-      <main style={styles.main}>
-        {!mostrarAgendar ? (
-          <div>
-            <h3 style={styles.sectionTitle}>Nuestros Servicios</h3>
-            <p style={styles.subtitle}>Selecciona un servicio para agendar</p>
-
-            <div style={styles.filtros}>
-              <label style={styles.filtroLabel}>🚗 Filtrar por vehículo:</label>
-              <select 
-                value={filtroVehiculo} 
-                onChange={(e) => setFiltroVehiculo(e.target.value)}
-                style={styles.selectFiltro}
-              >
-                <option value="todos">🚗 Todos los servicios</option>
-                <option value="coche">🚗 Coche</option>
-                <option value="camioneta">🚙 Camioneta</option>
-                <option value="furgoneta">🚐 Furgoneta</option>
-                <option value="motocicleta">🏍️ Motocicleta</option>
-              </select>
-            </div>
-
-            {loading ? (
-              <Loader />
-            ) : servicios.length === 0 ? (
-              <p style={styles.sinServicios}>No hay servicios disponibles para este tipo de vehículo.</p>
-            ) : (
-              <div style={styles.grid}>
-                {servicios.map((item) => (
-                  <div key={item.id} style={styles.card}>
-                    <h4 style={styles.cardTitle}>{item.nombre}</h4>
-                    <p style={styles.cardDesc}>{item.descripcion}</p>
-                    <p style={styles.cardPrice}>${item.precio}</p>
-                    <p style={styles.cardTime}>⏱️ {item.tiempo_base_minutos} min</p>
-                    {item.tipo_vehiculo && item.tipo_vehiculo !== 'todos' && (
-                      <p style={styles.cardTipo}>🚗 {item.tipo_vehiculo}</p>
-                    )}
-                    <button 
-                      onClick={() => seleccionarServicio(item)} 
-                      style={styles.agendarBtn}
-                    >
-                      📅 Agendar
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        ) : (
-          <AgendarCita 
-            servicio={servicioSeleccionado} 
-            user={user} 
-            onVolver={volver} 
+      {/* HERO SECTION */}
+      <motion.section
+        initial="hidden"
+        animate="visible"
+        variants={fadeInUp}
+        style={styles.hero}
+      >
+        <div style={styles.heroContent}>
+          <motion.h1 style={styles.heroTitle} variants={fadeInUp}>
+            <span style={{ color: COLORS.primary }}>HI</span>
+            <span style={{ color: COLORS.silver }}> PERFORMANCE</span>
+          </motion.h1>
+          <motion.p style={styles.heroSubtitle} variants={fadeInUp}>
+            Tu vehículo merece brillar.<br />
+            Reservá tu turno en segundos.
+          </motion.p>
+          <motion.div style={styles.heroButtons} variants={fadeInUp}>
+            <motion.button
+              whileHover={{ scale: 1.05, boxShadow: '0 12px 40px rgba(106,13,173,0.4)' }}
+              whileTap={{ scale: 0.95 }}
+              style={styles.btnPrimary}
+              onClick={() => document.getElementById('servicios').scrollIntoView({ behavior: 'smooth' })}
+            >
+              Reservar Turno <FaArrowRight style={{ marginLeft: '8px' }} />
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05, boxShadow: '0 8px 30px rgba(106,13,173,0.15)' }}
+              whileTap={{ scale: 0.95 }}
+              style={styles.btnOutline}
+              onClick={() => document.getElementById('servicios').scrollIntoView({ behavior: 'smooth' })}
+            >
+              Ver Servicios
+            </motion.button>
+          </motion.div>
+        </div>
+        <motion.div
+          style={styles.heroImage}
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <img
+            src="https://images.unsplash.com/photo-1601362840469-51e4d8d58785?w=600"
+            alt="Coche brillante"
+            style={styles.heroImg}
           />
+        </motion.div>
+      </motion.section>
+
+      {/* SECCIÓN DE SERVICIOS */}
+      <motion.section
+        id="servicios"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={staggerContainer}
+        style={styles.section}
+      >
+        <motion.h2 variants={fadeInUp} style={styles.sectionTitle}>Nuestros Servicios</motion.h2>
+        <motion.p variants={fadeInUp} style={styles.sectionSub}>
+          Cuidamos cada detalle de tu vehículo con productos de primera calidad.
+        </motion.p>
+
+        {/* FILTRO */}
+        <motion.div variants={fadeInUp} style={styles.filtros}>
+          <label style={styles.filtroLabel}>🚗 Filtrar por vehículo:</label>
+          <select
+            value={filtroVehiculo}
+            onChange={(e) => setFiltroVehiculo(e.target.value)}
+            style={styles.selectFiltro}
+          >
+            <option value="todos">🚗 Todos los servicios</option>
+            <option value="coche">🚗 Coche</option>
+            <option value="camioneta">🚙 Camioneta</option>
+            <option value="furgoneta">🚐 Furgoneta</option>
+            <option value="motocicleta">🏍️ Motocicleta</option>
+          </select>
+        </motion.div>
+
+        {error && (
+          <div style={styles.error}>
+            <strong>⚠️ Error:</strong> {error}
+            <button onClick={() => cargarServicios()} style={styles.errorBtn}>
+              Reintentar
+            </button>
+          </div>
         )}
-      </main>
+
+        {loading ? (
+          <Loader />
+        ) : servicios.length === 0 ? (
+          <p style={styles.sinServicios}>No hay servicios disponibles para este tipo de vehículo.</p>
+        ) : (
+          <motion.div
+            variants={staggerContainer}
+            style={styles.grid}
+          >
+            {servicios.map((item, index) => {
+              const icons = [<FaWater />, <FaShieldAlt />, <FaStar />];
+              return (
+                <motion.div
+                  key={item.id}
+                  variants={fadeInUp}
+                  whileHover={cardHover}
+                  style={styles.card}
+                >
+                  <div style={styles.serviceIcon}>
+                    {icons[index % icons.length]}
+                  </div>
+                  <h4 style={styles.cardTitle}>{item.nombre}</h4>
+                  <p style={styles.cardDesc}>{item.descripcion}</p>
+                  <p style={styles.cardPrice}>${item.precio}</p>
+                  <p style={styles.cardTime}>⏱️ {item.tiempo_base_minutos} min</p>
+                  {item.tipo_vehiculo && item.tipo_vehiculo !== 'todos' && (
+                    <p style={styles.cardTipo}>🚗 {item.tipo_vehiculo}</p>
+                  )}
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => seleccionarServicio(item)}
+                    style={styles.agendarBtn}
+                  >
+                    📅 Agendar
+                  </motion.button>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        )}
+      </motion.section>
+
+      {/* BENEFICIOS */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={staggerContainer}
+        style={styles.benefitsSection}
+      >
+        <div style={styles.benefitsGrid}>
+          <motion.div variants={fadeInUp} style={styles.benefitItem}>
+            <FaClock size={40} color={COLORS.primary} />
+            <h4>Reserva en 1 minuto</h4>
+            <p>Agendá tu turno de forma rápida y sencilla.</p>
+          </motion.div>
+          <motion.div variants={fadeInUp} style={styles.benefitItem}>
+            <FaWater size={40} color={COLORS.secondary} />
+            <h4>Productos premium</h4>
+            <p>Utilizamos los mejores productos para tu vehículo.</p>
+          </motion.div>
+          <motion.div variants={fadeInUp} style={styles.benefitItem}>
+            <FaShieldAlt size={40} color={COLORS.silverDark} />
+            <h4>Acabado impecable</h4>
+            <p>Dejamos tu coche como nuevo, con brillo y protección.</p>
+          </motion.div>
+        </div>
+      </motion.section>
+
+      {/* CTA FINAL */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        style={styles.ctaSection}
+      >
+        <h2 style={styles.ctaTitle}>¿Listo para que tu coche brille?</h2>
+        <motion.button
+          whileHover={{ scale: 1.05, boxShadow: '0 12px 40px rgba(106,13,173,0.5)' }}
+          whileTap={{ scale: 0.95 }}
+          style={styles.btnPrimary}
+          onClick={() => document.getElementById('servicios').scrollIntoView({ behavior: 'smooth' })}
+        >
+          Reservar Turno Ahora
+        </motion.button>
+      </motion.div>
+
+      {/* AGENDAR CITA (OVERLAY) */}
+      {mostrarAgendar && (
+        <AgendarCita
+          servicio={servicioSeleccionado}
+          user={user}
+          onVolver={volver}
+        />
+      )}
     </div>
   );
 };
 
 // ==========================================
-// COMPONENTE AGENDAR CITA
+// COMPONENTE AGENDAR CITA (MODERNIZADO)
 // ==========================================
 const AgendarCita = ({ servicio, user, onVolver }) => {
   const [fecha, setFecha] = useState('');
@@ -184,9 +347,9 @@ const AgendarCita = ({ servicio, user, onVolver }) => {
       );
 
       if (!disponibilidadResponse.data.disponible) {
-        setToast({ 
-          message: `❌ No hay cupo disponible para ${tipoVehiculo} en esta fecha.`, 
-          type: 'error' 
+        setToast({
+          message: `❌ No hay cupo disponible para ${tipoVehiculo} en esta fecha.`,
+          type: 'error'
         });
         setCargando(false);
         return;
@@ -220,23 +383,14 @@ const AgendarCita = ({ servicio, user, onVolver }) => {
   const cambiarMes = (incremento) => {
     let mes = mesActual + incremento;
     let año = añoActual;
-    
-    if (mes > 12) {
-      mes = 1;
-      año++;
-    } else if (mes < 1) {
-      mes = 12;
-      año--;
-    }
-    
+    if (mes > 12) { mes = 1; año++; }
+    else if (mes < 1) { mes = 12; año--; }
     setMesActual(mes);
     setAñoActual(año);
   };
 
   const renderCalendario = () => {
-    if (cargandoDias) {
-      return <Loader message="Cargando días disponibles..." />;
-    }
+    if (cargandoDias) return <Loader message="Cargando días disponibles..." />;
 
     const fechasDisponibles = diasDisponibles.map(d => d.fecha);
     const diasEnMes = new Date(añoActual, mesActual, 0).getDate();
@@ -257,17 +411,15 @@ const AgendarCita = ({ servicio, user, onVolver }) => {
           {diasSemana.map(d => (
             <div key={d} style={styles.calendarioDiaSemana}>{d}</div>
           ))}
-          
           {Array.from({ length: primerDiaSemana }).map((_, i) => (
             <div key={`empty-${i}`} style={styles.calendarioDiaVacio} />
           ))}
-          
           {Array.from({ length: diasEnMes }).map((_, i) => {
             const dia = i + 1;
             const fechaStr = `${añoActual}-${String(mesActual).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
             const disponible = fechasDisponibles.includes(fechaStr);
             const seleccionado = fecha === fechaStr;
-            
+
             return (
               <div
                 key={dia}
@@ -296,25 +448,30 @@ const AgendarCita = ({ servicio, user, onVolver }) => {
             📅 Fecha seleccionada: {new Date(fecha).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
         )}
-
         {errorFecha && <p style={styles.error}>{errorFecha}</p>}
       </div>
     );
   };
 
   return (
-    <div>
-      <button onClick={onVolver} style={styles.volverBtn}>← Volver</button>
-      
-      {toast && (
-        <Toast 
-          message={toast.message} 
-          type={toast.type} 
-          onClose={() => setToast(null)} 
-        />
-      )}
-      
-      <div style={styles.cardAgendar}>
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 50 }}
+      style={styles.modalOverlay}
+      onClick={onVolver}
+    >
+      <motion.div
+        style={styles.cardAgendar}
+        onClick={(e) => e.stopPropagation()}
+        initial={{ scale: 0.9 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <button onClick={onVolver} style={styles.volverBtn}>← Volver</button>
+
+        {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+
         <h2 style={styles.agendarTitle}>📅 Agendar Cita</h2>
         <p><strong>Servicio:</strong> {servicio?.nombre}</p>
         <p><strong>Precio:</strong> ${servicio?.precio}</p>
@@ -322,8 +479,8 @@ const AgendarCita = ({ servicio, user, onVolver }) => {
 
         <div style={styles.formGroup}>
           <label style={styles.formLabel}>Tipo de Vehículo:</label>
-          <select 
-            value={tipoVehiculo} 
+          <select
+            value={tipoVehiculo}
             onChange={(e) => setTipoVehiculo(e.target.value)}
             style={styles.input}
           >
@@ -356,8 +513,8 @@ const AgendarCita = ({ servicio, user, onVolver }) => {
           <p style={styles.error}>No hay horas disponibles para esta fecha</p>
         )}
 
-        <button 
-          onClick={handleAgendar} 
+        <button
+          onClick={handleAgendar}
           style={{
             ...styles.confirmarBtn,
             ...((!fecha || !hora || cargando) ? styles.confirmarBtnDisabled : {})
@@ -366,25 +523,26 @@ const AgendarCita = ({ servicio, user, onVolver }) => {
         >
           {cargando ? '⏳ Guardando...' : '✅ Confirmar Cita'}
         </button>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
+// ==========================================
+// ESTILOS MODERNOS (con glassmorphism y efectos)
+// ==========================================
 const styles = {
   container: {
     minHeight: '100vh',
-    backgroundColor: COLORS.background,
   },
   headerSimple: {
-    padding: '15px 30px',
-    backgroundColor: COLORS.white,
-    borderBottom: `1px solid ${COLORS.silverLight}`,
+    padding: '20px 30px',
     marginBottom: '20px',
   },
   welcomeText: {
     ...FONTS.subtitle,
-    color: COLORS.textDark,
+    color: COLORS.textLight,
+    textShadow: '0 2px 12px rgba(0,0,0,0.15)',
   },
   adminMessage: {
     ...CARDS.default,
@@ -392,6 +550,9 @@ const styles = {
     padding: '60px 20px',
     maxWidth: '500px',
     margin: '40px auto',
+    background: 'rgba(255,255,255,0.85)',
+    backdropFilter: 'blur(12px)',
+    borderRadius: '32px',
   },
   adminTitle: {
     ...FONTS.title,
@@ -406,119 +567,316 @@ const styles = {
     color: COLORS.textGray,
     marginTop: '10px',
   },
-  main: {
-    padding: '0 30px 30px 30px',
+  // HERO
+  hero: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '60px 40px',
+    background: 'rgba(255,255,255,0.2)',
+    backdropFilter: 'blur(12px)',
+    borderRadius: '32px',
+    marginBottom: '40px',
+    border: '1px solid rgba(255,255,255,0.2)',
+    flexWrap: 'wrap',
+    gap: '30px',
+  },
+  heroContent: {
+    flex: 1,
+    minWidth: '280px',
+  },
+  heroTitle: {
+    fontSize: '3.5rem',
+    fontWeight: '800',
+    letterSpacing: '2px',
+    marginBottom: '20px',
+    lineHeight: 1.2,
+    color: '#fff',
+    textShadow: '0 4px 20px rgba(0,0,0,0.15)',
+  },
+  heroSubtitle: {
+    fontSize: '1.3rem',
+    color: 'rgba(255,255,255,0.9)',
+    marginBottom: '30px',
+    lineHeight: 1.6,
+    textShadow: '0 2px 8px rgba(0,0,0,0.1)',
+  },
+  heroButtons: {
+    display: 'flex',
+    gap: '15px',
+    flexWrap: 'wrap',
+  },
+  btnPrimary: {
+    background: 'linear-gradient(135deg, #6A0DAD 0%, #8B5CF6 100%)',
+    color: '#fff',
+    border: 'none',
+    padding: '16px 36px',
+    borderRadius: '50px',
+    fontSize: '1rem',
+    fontWeight: '700',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    boxShadow: '0 4px 25px rgba(106,13,173,0.4)',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '10px',
+    letterSpacing: '0.5px',
+    backdropFilter: 'blur(4px)',
+  },
+  btnOutline: {
+    background: 'rgba(255,255,255,0.15)',
+    backdropFilter: 'blur(8px)',
+    color: '#fff',
+    border: '2px solid rgba(255,255,255,0.5)',
+    padding: '14px 32px',
+    borderRadius: '50px',
+    fontSize: '1rem',
+    fontWeight: '600',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '10px',
+    textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+  },
+  heroImage: {
+    flex: 1,
+    minWidth: '280px',
+    display: 'flex',
+    justifyContent: 'center',
+  },
+  heroImg: {
+    width: '100%',
+    maxWidth: '500px',
+    borderRadius: '24px',
+    boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+    border: '1px solid rgba(255,255,255,0.2)',
+  },
+  // SECCIÓN SERVICIOS
+  section: {
+    padding: '40px 0',
     maxWidth: '1200px',
     margin: '0 auto',
   },
   sectionTitle: {
     ...FONTS.title,
-    marginBottom: '5px',
+    textAlign: 'center',
+    marginBottom: '10px',
+    color: '#fff',
+    textShadow: '0 2px 12px rgba(0,0,0,0.1)',
   },
-  subtitle: {
+  sectionSub: {
     ...FONTS.small,
-    color: COLORS.textGray,
-    marginBottom: '20px',
+    color: 'rgba(255,255,255,0.8)',
+    textAlign: 'center',
+    marginBottom: '40px',
   },
   filtros: {
     display: 'flex',
     alignItems: 'center',
     gap: '15px',
-    marginBottom: '20px',
+    marginBottom: '30px',
     flexWrap: 'wrap',
+    background: 'rgba(255,255,255,0.15)',
+    backdropFilter: 'blur(8px)',
+    padding: '16px 24px',
+    borderRadius: '20px',
+    border: '1px solid rgba(255,255,255,0.1)',
   },
   filtroLabel: {
     ...FONTS.body,
-    fontWeight: 'bold',
-    color: COLORS.textDark,
+    fontWeight: '600',
+    color: '#fff',
+    textShadow: '0 2px 4px rgba(0,0,0,0.1)',
   },
   selectFiltro: {
     ...INPUTS.default,
-    backgroundColor: COLORS.white,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    backdropFilter: 'blur(4px)',
+    color: '#fff',
+    border: '1px solid rgba(255,255,255,0.2)',
     maxWidth: '250px',
+    option: {
+      color: '#000',
+    },
   },
   sinServicios: {
     ...FONTS.body,
-    color: COLORS.textGray,
+    color: 'rgba(255,255,255,0.8)',
     textAlign: 'center',
-    padding: '40px',
+    padding: '60px',
+    background: 'rgba(255,255,255,0.1)',
+    borderRadius: '24px',
+    backdropFilter: 'blur(8px)',
   },
   grid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-    gap: '20px',
-    marginTop: '20px',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+    gap: '30px',
+    marginTop: '30px',
   },
   card: {
-    ...CARDS.default,
-    padding: '20px',
+    background: 'rgba(255, 255, 255, 0.75)',
+    backdropFilter: 'blur(16px)',
+    borderRadius: '24px',
+    padding: '30px 25px',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+    border: '1px solid rgba(255,255,255,0.3)',
+    transition: 'all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+    textAlign: 'center',
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  serviceIcon: {
+    fontSize: '2.5rem',
+    marginBottom: '12px',
+    color: COLORS.primary,
+    filter: 'drop-shadow(0 4px 12px rgba(106,13,173,0.2))',
   },
   cardTitle: {
     ...FONTS.subtitle,
     color: COLORS.primary,
-    fontSize: '18px',
+    fontSize: '20px',
+    fontWeight: '700',
   },
   cardDesc: {
     ...FONTS.body,
     color: COLORS.textGray,
-    marginTop: '5px',
+    marginTop: '8px',
+    lineHeight: 1.5,
   },
   cardPrice: {
-    fontSize: '1.5rem',
-    fontWeight: 'bold',
+    fontSize: '1.8rem',
+    fontWeight: '800',
     color: COLORS.success,
-    marginTop: '10px',
+    marginTop: '15px',
+    textShadow: '0 2px 8px rgba(34,197,94,0.2)',
   },
   cardTime: {
     ...FONTS.small,
     color: COLORS.textGray,
+    marginTop: '5px',
   },
   cardTipo: {
     ...FONTS.small,
     color: COLORS.primaryLight,
-    marginTop: '5px',
-    fontWeight: 'bold',
+    marginTop: '8px',
+    fontWeight: '600',
   },
   agendarBtn: {
-    ...BUTTONS.primary,
+    background: 'linear-gradient(135deg, #22C55E 0%, #15803D 100%)',
+    color: '#fff',
+    border: 'none',
+    padding: '14px 28px',
+    borderRadius: '50px',
+    fontWeight: '700',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    boxShadow: '0 4px 20px rgba(34,197,94,0.35)',
     width: '100%',
-    marginTop: '15px',
-    textAlign: 'center',
+    marginTop: '20px',
+    fontSize: '16px',
+    letterSpacing: '0.3px',
   },
-  volverBtn: {
-    ...BUTTONS.outline,
-    marginBottom: '20px',
+  // BENEFICIOS
+  benefitsSection: {
+    padding: '60px 20px',
+    marginTop: '40px',
+    background: 'rgba(255,255,255,0.08)',
+    backdropFilter: 'blur(8px)',
+    borderRadius: '32px',
+    border: '1px solid rgba(255,255,255,0.1)',
+  },
+  benefitsGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+    gap: '30px',
+    maxWidth: '1100px',
+    margin: '0 auto',
+  },
+  benefitItem: {
+    textAlign: 'center',
+    padding: '20px',
+    background: 'rgba(255,255,255,0.08)',
+    borderRadius: '20px',
+    backdropFilter: 'blur(4px)',
+    border: '1px solid rgba(255,255,255,0.05)',
+  },
+  // CTA
+  ctaSection: {
+    padding: '60px 20px',
+    textAlign: 'center',
+    marginTop: '40px',
+    background: 'rgba(106,13,173,0.3)',
+    backdropFilter: 'blur(12px)',
+    borderRadius: '32px',
+    border: '1px solid rgba(255,255,255,0.15)',
+  },
+  ctaTitle: {
+    fontSize: '2.2rem',
+    fontWeight: '800',
+    color: '#fff',
+    marginBottom: '25px',
+    textShadow: '0 4px 20px rgba(0,0,0,0.1)',
+  },
+  // MODAL AGENDAR
+  modalOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    backdropFilter: 'blur(8px)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+    padding: '20px',
   },
   cardAgendar: {
-    ...CARDS.default,
-    maxWidth: '500px',
-    margin: '0 auto',
-    padding: '30px',
+    background: 'rgba(255, 255, 255, 0.92)',
+    backdropFilter: 'blur(20px)',
+    maxWidth: '520px',
+    width: '100%',
+    padding: '35px',
+    borderRadius: '32px',
+    boxShadow: '0 30px 80px rgba(0,0,0,0.2)',
+    border: '1px solid rgba(255,255,255,0.3)',
+    maxHeight: '90vh',
+    overflowY: 'auto',
   },
   agendarTitle: {
     ...FONTS.title,
     marginBottom: '20px',
     textAlign: 'center',
+    fontSize: '26px',
   },
   formGroup: {
     marginBottom: '20px',
   },
   formLabel: {
     ...FONTS.body,
-    fontWeight: 'bold',
+    fontWeight: '600',
     display: 'block',
-    marginBottom: '5px',
+    marginBottom: '6px',
     color: COLORS.textDark,
   },
   input: {
     ...INPUTS.default,
-    backgroundColor: COLORS.white,
+    backgroundColor: 'rgba(255,255,255,0.6)',
+    backdropFilter: 'blur(4px)',
+    border: '2px solid rgba(229,231,235,0.5)',
   },
   confirmarBtn: {
     ...BUTTONS.secondary,
     width: '100%',
-    marginTop: '10px',
+    marginTop: '15px',
     textAlign: 'center',
+    borderRadius: '50px',
+    padding: '14px',
+    fontSize: '17px',
   },
   confirmarBtnDisabled: {
     backgroundColor: COLORS.silverDark,
@@ -529,16 +887,36 @@ const styles = {
     color: COLORS.error,
     textAlign: 'center',
     marginTop: '10px',
-    padding: '8px',
-    backgroundColor: '#FEE2E2',
-    borderRadius: '8px',
+    padding: '12px',
+    backgroundColor: 'rgba(239,68,68,0.08)',
+    borderRadius: '14px',
+    borderLeft: '4px solid #EF4444',
   },
-  
-  // Calendario
+  errorBtn: {
+    marginLeft: '12px',
+    padding: '6px 16px',
+    background: COLORS.primary,
+    color: '#fff',
+    border: 'none',
+    borderRadius: '30px',
+    cursor: 'pointer',
+    fontWeight: '600',
+    transition: 'all 0.3s ease',
+  },
+  volverBtn: {
+    ...BUTTONS.outline,
+    marginBottom: '20px',
+    borderRadius: '50px',
+    padding: '10px 24px',
+  },
+  // CALENDARIO
   calendarioContainer: {
-    ...CARDS.default,
-    padding: '15px',
-    marginBottom: '15px',
+    background: 'rgba(255,255,255,0.5)',
+    backdropFilter: 'blur(8px)',
+    borderRadius: '20px',
+    padding: '18px',
+    marginBottom: '18px',
+    border: '1px solid rgba(255,255,255,0.2)',
   },
   calendarioHeader: {
     display: 'flex',
@@ -550,62 +928,67 @@ const styles = {
     ...FONTS.subtitle,
     fontSize: '18px',
     textTransform: 'capitalize',
+    fontWeight: '700',
   },
   calendarioBtn: {
     ...BUTTONS.primary,
-    padding: '8px 15px',
+    padding: '8px 18px',
     fontSize: '14px',
+    borderRadius: '40px',
   },
   calendarioGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(7, 1fr)',
-    gap: '5px',
+    gap: '6px',
   },
   calendarioDiaSemana: {
     textAlign: 'center',
-    fontWeight: 'bold',
+    fontWeight: '700',
     padding: '8px',
     fontSize: '12px',
     color: COLORS.textGray,
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
   },
   calendarioDia: {
     textAlign: 'center',
     padding: '10px',
-    borderRadius: '5px',
+    borderRadius: '12px',
     cursor: 'pointer',
-    fontSize: '14px',
-    minHeight: '35px',
+    fontSize: '15px',
+    minHeight: '38px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    transition: 'all 0.2s ease',
+    fontWeight: '500',
   },
   calendarioDiaVacio: {
     padding: '10px',
   },
   calendarioDiaDisponible: {
-    backgroundColor: '#e8f5e9',
-    color: '#2e7d32',
+    backgroundColor: 'rgba(34,197,94,0.15)',
+    color: '#15803D',
     cursor: 'pointer',
-    '&:hover': {
-      backgroundColor: '#c8e6c9',
-    },
   },
   calendarioDiaNoDisponible: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: 'rgba(0,0,0,0.03)',
     color: '#bdbdbd',
     cursor: 'not-allowed',
   },
   calendarioDiaSeleccionado: {
     backgroundColor: COLORS.primary,
-    color: COLORS.textLight,
-    fontWeight: 'bold',
+    color: '#fff',
+    fontWeight: '700',
+    boxShadow: '0 4px 16px rgba(106,13,173,0.3)',
+    transform: 'scale(1.05)',
   },
   fechaSeleccionada: {
     textAlign: 'center',
-    marginTop: '10px',
+    marginTop: '12px',
     ...FONTS.small,
     color: COLORS.textDark,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
 };
 
