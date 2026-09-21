@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import Login from './components/Login';
 import Registro from './components/Registro';
 import Home from './components/Home';
@@ -48,6 +47,7 @@ function App() {
 
   const isAdmin = user.rol === 'admin';
 
+  // Renderizar botones del menú según rol
   const renderMenuItems = () => {
     if (!isAdmin) {
       return (
@@ -92,6 +92,7 @@ function App() {
     );
   };
 
+  // Renderizar botones del nav (escritorio) según rol
   const renderNavButtons = () => {
     if (!isAdmin) {
       return (
@@ -137,8 +138,8 @@ function App() {
   };
 
   return (
-    <div className="app-wrapper">
-      {/* Overlay del menú lateral */}
+    <div>
+      {/* Overlay (fondo oscuro) */}
       <div className={`menu-overlay ${menuAbierto ? 'open' : ''}`} onClick={() => setMenuAbierto(false)} />
 
       {/* Menú lateral (móvil) */}
@@ -155,18 +156,20 @@ function App() {
         </button>
       </div>
 
-      {/* Navbar con glassmorphism */}
-      <nav className="navbar glass-nav">
+      {/* Navbar */}
+      <nav className="navbar">
         <div className="nav-container">
           <div className="nav-title">
             <span className="highlight">HI</span>
             <span className="silver">PERFORMANCE</span>
           </div>
 
+          {/* Botón hamburguesa (móvil) */}
           <button className="menu-btn" onClick={() => setMenuAbierto(!menuAbierto)}>
             ☰
           </button>
 
+          {/* Menú escritorio */}
           <div className="nav-links">
             {renderNavButtons()}
             <button className="logout-btn" onClick={handleLogout}>
@@ -176,31 +179,20 @@ function App() {
         </div>
       </nav>
 
-      {/* Contenido con animaciones de transición */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={vista}
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -30 }}
-          transition={{ duration: 0.4, ease: 'easeInOut' }}
-          className="app-container"
-        >
-          {!isAdmin && vista === 'home' && <Home user={user} />}
-          {!isAdmin && vista === 'mis-citas' && <MisCitas />}
-          {!isAdmin && vista === 'editar-perfil' && (
-            <EditarPerfil user={user} onPerfilActualizado={setUser} />
-          )}
+      {/* Contenido */}
+      <div className="app-container">
+        {!isAdmin && vista === 'home' && <Home user={user} />}
+        {!isAdmin && vista === 'mis-citas' && <MisCitas />}
+        {!isAdmin && vista === 'editar-perfil' && <EditarPerfil user={user} onPerfilActualizado={setUser} />}
 
-          {isAdmin && vista === 'admin-dashboard' && <AdminDashboard />}
-          {isAdmin && vista === 'admin-clientes' && <AdminClientes />}
-          {isAdmin && vista === 'admin-vehiculos' && <AdminVehiculos />}
-          {isAdmin && vista === 'admin-citas' && <AdminCitas />}
-          {isAdmin && vista === 'admin-servicios' && <AdminServicios />}
-          {isAdmin && vista === 'admin-horarios' && <AdminHorarios />}
-          {isAdmin && vista === 'admin-limites' && <AdminLimites />}
-        </motion.div>
-      </AnimatePresence>
+        {isAdmin && vista === 'admin-dashboard' && <AdminDashboard />}
+        {isAdmin && vista === 'admin-clientes' && <AdminClientes />}
+        {isAdmin && vista === 'admin-vehiculos' && <AdminVehiculos />}
+        {isAdmin && vista === 'admin-citas' && <AdminCitas />}
+        {isAdmin && vista === 'admin-servicios' && <AdminServicios />}
+        {isAdmin && vista === 'admin-horarios' && <AdminHorarios />}
+        {isAdmin && vista === 'admin-limites' && <AdminLimites />}
+      </div>
     </div>
   );
 }

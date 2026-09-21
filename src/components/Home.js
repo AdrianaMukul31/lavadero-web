@@ -41,10 +41,19 @@ const Home = ({ user }) => {
       setError(null);
       const params = filtroVehiculo !== 'todos' ? `?tipo_vehiculo=${filtroVehiculo}` : '';
       const response = await api.get(`/servicios${params}`);
-      setServicios(response.data);
+      
+      // ✅ LOG DE DEPURACIÓN (bórralo cuando funcione)
+      console.log('Respuesta de /servicios:', response.data);
+      
+      // ✅ VALIDACIÓN: si no es array, lo convertimos o mostramos error
+      const data = Array.isArray(response.data) 
+        ? response.data 
+        : (response.data?.servicios || response.data?.data || []);
+      
+      setServicios(data);
     } catch (error) {
       console.error('Error al cargar servicios:', error);
-      setError('Error al cargar servicios. Intenta de nuevo.');
+      setError(`Error al cargar servicios: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -108,10 +117,14 @@ const Home = ({ user }) => {
             <span style={{ color: COLORS.primary }}>HI</span>
             <span style={{ color: COLORS.silver }}> PERFORMANCE</span>
           </motion.h1>
+
+          {/* ✅ NUEVA DESCRIPCIÓN BREVE */}
           <motion.p style={styles.heroSubtitle} variants={fadeInUp}>
-            Tu vehículo merece brillar.<br />
-            Reservá tu turno en segundos.
+            Somos tu lavadero de confianza. Cuidamos cada detalle de tu vehículo
+            con productos premium y un acabado impecable.<br />
+            <strong>Agendá tu cita en segundos.</strong>
           </motion.p>
+
           <motion.div style={styles.heroButtons} variants={fadeInUp}>
             <motion.button
               whileHover={{ scale: 1.05, boxShadow: '0 12px 40px rgba(106,13,173,0.4)' }}
@@ -119,7 +132,7 @@ const Home = ({ user }) => {
               style={styles.btnPrimary}
               onClick={() => document.getElementById('servicios').scrollIntoView({ behavior: 'smooth' })}
             >
-              Reservar Turno <FaArrowRight style={{ marginLeft: '8px' }} />
+              Agendar cita <FaArrowRight style={{ marginLeft: '8px' }} />
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.05, boxShadow: '0 8px 30px rgba(106,13,173,0.15)' }}
@@ -218,7 +231,7 @@ const Home = ({ user }) => {
                     onClick={() => seleccionarServicio(item)}
                     style={styles.agendarBtn}
                   >
-                    📅 Agendar
+                    📅 Agendar cita
                   </motion.button>
                 </motion.div>
               );
@@ -227,51 +240,8 @@ const Home = ({ user }) => {
         )}
       </motion.section>
 
-      {/* BENEFICIOS */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={staggerContainer}
-        style={styles.benefitsSection}
-      >
-        <div style={styles.benefitsGrid}>
-          <motion.div variants={fadeInUp} style={styles.benefitItem}>
-            <FaClock size={40} color={COLORS.primary} />
-            <h4>Reserva en 1 minuto</h4>
-            <p>Agendá tu turno de forma rápida y sencilla.</p>
-          </motion.div>
-          <motion.div variants={fadeInUp} style={styles.benefitItem}>
-            <FaWater size={40} color={COLORS.secondary} />
-            <h4>Productos premium</h4>
-            <p>Utilizamos los mejores productos para tu vehículo.</p>
-          </motion.div>
-          <motion.div variants={fadeInUp} style={styles.benefitItem}>
-            <FaShieldAlt size={40} color={COLORS.silverDark} />
-            <h4>Acabado impecable</h4>
-            <p>Dejamos tu coche como nuevo, con brillo y protección.</p>
-          </motion.div>
-        </div>
-      </motion.section>
-
-      {/* CTA FINAL */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        style={styles.ctaSection}
-      >
-        <h2 style={styles.ctaTitle}>¿Listo para que tu coche brille?</h2>
-        <motion.button
-          whileHover={{ scale: 1.05, boxShadow: '0 12px 40px rgba(106,13,173,0.5)' }}
-          whileTap={{ scale: 0.95 }}
-          style={styles.btnPrimary}
-          onClick={() => document.getElementById('servicios').scrollIntoView({ behavior: 'smooth' })}
-        >
-          Reservar Turno Ahora
-        </motion.button>
-      </motion.div>
+      {/* ❌ SECCIÓN DE BENEFICIOS ELIMINADA */}
+      {/* ❌ SECCIÓN CTA FINAL ELIMINADA */}
 
       {/* AGENDAR CITA (OVERLAY) */}
       {mostrarAgendar && (
@@ -286,7 +256,7 @@ const Home = ({ user }) => {
 };
 
 // ==========================================
-// COMPONENTE AGENDAR CITA (MODERNIZADO)
+// COMPONENTE AGENDAR CITA
 // ==========================================
 const AgendarCita = ({ servicio, user, onVolver }) => {
   const [fecha, setFecha] = useState('');
@@ -529,7 +499,7 @@ const AgendarCita = ({ servicio, user, onVolver }) => {
 };
 
 // ==========================================
-// ESTILOS MODERNOS (con glassmorphism y efectos)
+// ESTILOS
 // ==========================================
 const styles = {
   container: {
@@ -567,7 +537,6 @@ const styles = {
     color: COLORS.textGray,
     marginTop: '10px',
   },
-  // HERO
   hero: {
     display: 'flex',
     flexDirection: 'row',
@@ -596,8 +565,8 @@ const styles = {
     textShadow: '0 4px 20px rgba(0,0,0,0.15)',
   },
   heroSubtitle: {
-    fontSize: '1.3rem',
-    color: 'rgba(255,255,255,0.9)',
+    fontSize: '1.2rem',
+    color: 'rgba(255,255,255,0.95)',
     marginBottom: '30px',
     lineHeight: 1.6,
     textShadow: '0 2px 8px rgba(0,0,0,0.1)',
@@ -653,7 +622,6 @@ const styles = {
     boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
     border: '1px solid rgba(255,255,255,0.2)',
   },
-  // SECCIÓN SERVICIOS
   section: {
     padding: '40px 0',
     maxWidth: '1200px',
@@ -697,9 +665,6 @@ const styles = {
     color: '#fff',
     border: '1px solid rgba(255,255,255,0.2)',
     maxWidth: '250px',
-    option: {
-      color: '#000',
-    },
   },
   sinServicios: {
     ...FONTS.body,
@@ -779,48 +744,6 @@ const styles = {
     fontSize: '16px',
     letterSpacing: '0.3px',
   },
-  // BENEFICIOS
-  benefitsSection: {
-    padding: '60px 20px',
-    marginTop: '40px',
-    background: 'rgba(255,255,255,0.08)',
-    backdropFilter: 'blur(8px)',
-    borderRadius: '32px',
-    border: '1px solid rgba(255,255,255,0.1)',
-  },
-  benefitsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-    gap: '30px',
-    maxWidth: '1100px',
-    margin: '0 auto',
-  },
-  benefitItem: {
-    textAlign: 'center',
-    padding: '20px',
-    background: 'rgba(255,255,255,0.08)',
-    borderRadius: '20px',
-    backdropFilter: 'blur(4px)',
-    border: '1px solid rgba(255,255,255,0.05)',
-  },
-  // CTA
-  ctaSection: {
-    padding: '60px 20px',
-    textAlign: 'center',
-    marginTop: '40px',
-    background: 'rgba(106,13,173,0.3)',
-    backdropFilter: 'blur(12px)',
-    borderRadius: '32px',
-    border: '1px solid rgba(255,255,255,0.15)',
-  },
-  ctaTitle: {
-    fontSize: '2.2rem',
-    fontWeight: '800',
-    color: '#fff',
-    marginBottom: '25px',
-    textShadow: '0 4px 20px rgba(0,0,0,0.1)',
-  },
-  // MODAL AGENDAR
   modalOverlay: {
     position: 'fixed',
     top: 0,
@@ -909,7 +832,6 @@ const styles = {
     borderRadius: '50px',
     padding: '10px 24px',
   },
-  // CALENDARIO
   calendarioContainer: {
     background: 'rgba(255,255,255,0.5)',
     backdropFilter: 'blur(8px)',
