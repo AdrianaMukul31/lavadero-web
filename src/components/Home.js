@@ -41,13 +41,13 @@ const Home = ({ user }) => {
       setError(null);
       const params = filtroVehiculo !== 'todos' ? `?tipo_vehiculo=${filtroVehiculo}` : '';
       const response = await api.get(`/servicios${params}`);
-      
+
       console.log('Respuesta de /servicios:', response.data);
-      
-      const data = Array.isArray(response.data) 
-        ? response.data 
+
+      const data = Array.isArray(response.data)
+        ? response.data
         : (response.data?.servicios || response.data?.data || []);
-      
+
       setServicios(data);
     } catch (error) {
       console.error('Error al cargar servicios:', error);
@@ -121,7 +121,6 @@ const Home = ({ user }) => {
             con productos premium y un acabado impecable.<br />
             <strong>Agendá tu cita en segundos.</strong>
           </motion.p>
-          {/* ✅ Botones eliminados */}
         </div>
         <motion.div
           style={styles.heroImage}
@@ -141,8 +140,7 @@ const Home = ({ user }) => {
       <motion.section
         id="servicios"
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
+        animate="visible"
         variants={staggerContainer}
         style={styles.section}
       >
@@ -181,16 +179,15 @@ const Home = ({ user }) => {
         ) : servicios.length === 0 ? (
           <p style={styles.sinServicios}>No hay servicios disponibles para este tipo de vehículo.</p>
         ) : (
-          <motion.div
-            variants={staggerContainer}
-            style={styles.grid}
-          >
+          <div style={styles.grid}>
             {servicios.map((item, index) => {
-              const icons = [<FaWater />, <FaShieldAlt />, <FaStar />];
+              const icons = [<FaWater key="water" />, <FaShieldAlt key="shield" />, <FaStar key="star" />];
               return (
                 <motion.div
                   key={item.id}
-                  variants={fadeInUp}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
                   whileHover={cardHover}
                   style={styles.card}
                 >
@@ -215,7 +212,7 @@ const Home = ({ user }) => {
                 </motion.div>
               );
             })}
-          </motion.div>
+          </div>
         )}
       </motion.section>
 
@@ -513,7 +510,6 @@ const styles = {
     color: COLORS.textGray,
     marginTop: '10px',
   },
-  // HERO
   hero: {
     display: 'flex',
     flexDirection: 'row',
@@ -532,7 +528,6 @@ const styles = {
     flex: 1,
     minWidth: '280px',
   },
-  // ✅ TÍTULO RESPONSIVE: se adapta al ancho de la pantalla
   heroTitle: {
     fontSize: 'clamp(1.8rem, 7vw, 3.5rem)',
     fontWeight: '800',
@@ -601,7 +596,6 @@ const styles = {
     boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
     border: '1px solid rgba(255,255,255,0.2)',
   },
-  // SECCIÓN SERVICIOS
   section: {
     padding: '40px 0',
     maxWidth: '1200px',
@@ -724,7 +718,6 @@ const styles = {
     fontSize: '16px',
     letterSpacing: '0.3px',
   },
-  // MODAL AGENDAR
   modalOverlay: {
     position: 'fixed',
     top: 0,
@@ -813,7 +806,6 @@ const styles = {
     borderRadius: '50px',
     padding: '10px 24px',
   },
-  // CALENDARIO
   calendarioContainer: {
     background: 'rgba(255,255,255,0.5)',
     backdropFilter: 'blur(8px)',
