@@ -738,6 +738,7 @@ const styles = {
     gridTemplateColumns: 'repeat(auto-fill, minmax(min(320px, 100%), 1fr))',
     gap: '30px',
     marginTop: '30px',
+    alignItems: 'start',   // ✅ Evita que las tarjetas se estiren al mismo alto
   },
   card: {
     background: 'rgba(255, 255, 255, 0.75)',
@@ -752,7 +753,8 @@ const styles = {
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
-    gap: '4px',
+    height: 'fit-content',      // ✅ La tarjeta solo ocupa el alto de su contenido
+    alignSelf: 'start',         // ✅ No se estira al alto de la fila
   },
   serviceIcon: {
     fontSize: '2.5rem',
