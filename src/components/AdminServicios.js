@@ -46,12 +46,12 @@ const AdminServicios = () => {
       }
       setMostrarForm(false);
       setEditando(null);
-      setFormData({ 
-        nombre: '', 
-        descripcion: '', 
-        precio: '', 
+      setFormData({
+        nombre: '',
+        descripcion: '',
+        precio: '',
         tiempo_base_minutos: '',
-        tipo_vehiculo: 'todos' 
+        tipo_vehiculo: 'todos'
       });
       cargarServicios();
     } catch (error) {
@@ -97,30 +97,39 @@ const AdminServicios = () => {
     return tipos[tipo] || tipo;
   };
 
+  // ✅ Convierte la descripción larga en lista de items
+  const parseDescripcion = (desc) => {
+    if (!desc) return [];
+    return desc
+      .split(/\s*-\s*/)       // separa por " - " o "-"
+      .map(item => item.trim())
+      .filter(item => item.length > 0);
+  };
+
   return (
     <div style={styles.container}>
       {toast && (
-        <Toast 
-          message={toast.message} 
-          type={toast.type} 
-          onClose={() => setToast(null)} 
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
         />
       )}
 
       <div style={styles.header}>
         <h2 style={styles.title}>⚙️ Gestión de Servicios</h2>
-        <button 
-          onClick={() => { 
-            setMostrarForm(true); 
-            setEditando(null); 
-            setFormData({ 
-              nombre: '', 
-              descripcion: '', 
-              precio: '', 
+        <button
+          onClick={() => {
+            setMostrarForm(true);
+            setEditando(null);
+            setFormData({
+              nombre: '',
+              descripcion: '',
+              precio: '',
               tiempo_base_minutos: '',
-              tipo_vehiculo: 'todos' 
-            }); 
-          }} 
+              tipo_vehiculo: 'todos'
+            });
+          }}
           style={styles.btnCrear}
         >
           + Nuevo Servicio
@@ -130,44 +139,44 @@ const AdminServicios = () => {
       {mostrarForm && (
         <form onSubmit={handleSubmit} style={styles.form}>
           <h3 style={styles.formTitle}>{editando ? '✏️ Editar Servicio' : '📝 Nuevo Servicio'}</h3>
-          
+
           <div style={styles.formGrid}>
-            <input 
-              name="nombre" 
-              placeholder="Nombre del servicio *" 
-              value={formData.nombre} 
-              onChange={handleChange} 
-              style={styles.input} 
-              required 
+            <input
+              name="nombre"
+              placeholder="Nombre del servicio *"
+              value={formData.nombre}
+              onChange={handleChange}
+              style={styles.input}
+              required
             />
-            
-            <input 
-              name="descripcion" 
-              placeholder="Descripción" 
-              value={formData.descripcion} 
-              onChange={handleChange} 
-              style={styles.input} 
+
+            <input
+              name="descripcion"
+              placeholder="Descripción (separa con guiones: item1 - item2 - item3)"
+              value={formData.descripcion}
+              onChange={handleChange}
+              style={styles.input}
             />
-            
-            <input 
-              name="precio" 
-              placeholder="Precio *" 
-              type="number" 
+
+            <input
+              name="precio"
+              placeholder="Precio *"
+              type="number"
               step="0.01"
-              value={formData.precio} 
-              onChange={handleChange} 
-              style={styles.input} 
-              required 
+              value={formData.precio}
+              onChange={handleChange}
+              style={styles.input}
+              required
             />
-            
-            <input 
-              name="tiempo_base_minutos" 
-              placeholder="Duración (min) *" 
-              type="number" 
-              value={formData.tiempo_base_minutos} 
-              onChange={handleChange} 
-              style={styles.input} 
-              required 
+
+            <input
+              name="tiempo_base_minutos"
+              placeholder="Duración (min) *"
+              type="number"
+              value={formData.tiempo_base_minutos}
+              onChange={handleChange}
+              style={styles.input}
+              required
             />
 
             <div style={styles.selectGroup}>
@@ -194,12 +203,12 @@ const AdminServicios = () => {
             <button type="submit" style={styles.btnGuardar}>
               {editando ? 'Actualizar' : 'Crear'}
             </button>
-            <button 
-              type="button" 
-              onClick={() => { 
-                setMostrarForm(false); 
-                setEditando(null); 
-              }} 
+            <button
+              type="button"
+              onClick={() => {
+                setMostrarForm(false);
+                setEditando(null);
+              }}
               style={styles.btnCancelar}
             >
               Cancelar
@@ -212,25 +221,46 @@ const AdminServicios = () => {
         <Loader />
       ) : (
         <div style={styles.grid}>
-          {servicios.map((item) => (
-            <div key={item.id} style={styles.card}>
-              <h4 style={styles.servicioNombre}>{item.nombre}</h4>
-              <p style={styles.servicioDesc}>{item.descripcion}</p>
-              <p style={styles.servicioPrice}>${item.precio}</p>
-              <p style={styles.servicioTime}>⏱️ {item.tiempo_base_minutos} min</p>
-              <p style={styles.servicioTipo}>
-                🚗 {traducirTipoVehiculo(item.tipo_vehiculo || 'todos')}
-              </p>
-              <div style={styles.cardActions}>
-                <button onClick={() => editarServicio(item)} style={styles.btnEditar}>
-                  ✏️ Editar
-                </button>
-                <button onClick={() => eliminarServicio(item.id)} style={styles.btnEliminar}>
-                  🗑️ Eliminar
-                </button>
+          {servicios.map((item) => {
+            const items = parseDescripcion(item.descripcion);
+            return (
+              <div key={item.id} style={styles.card}>
+                <h4 style={styles.servicioNombre}>{item.nombre}</h4>
+
+                {/* ✅ Lista con viñetas */}
+                {items.length > 0 ? (
+                  <ul style={styles.descList}>
+                    {items.map((punto, i) => (
+                      <li key={i} style={styles.descItem}>
+                        <span style={styles.descBullet}>•</span>
+                        <span style={styles.descText}>{punto}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p style={styles.sinDesc}>Sin descripción</p>
+                )}
+
+                <div style={styles.infoRow}>
+                  <span style={styles.servicioPrice}>${item.precio}</span>
+                  <span style={styles.servicioTime}>⏱️ {item.tiempo_base_minutos} min</span>
+                </div>
+
+                <p style={styles.servicioTipo}>
+                  {traducirTipoVehiculo(item.tipo_vehiculo || 'todos')}
+                </p>
+
+                <div style={styles.cardActions}>
+                  <button onClick={() => editarServicio(item)} style={styles.btnEditar}>
+                    ✏️ Editar
+                  </button>
+                  <button onClick={() => eliminarServicio(item.id)} style={styles.btnEliminar}>
+                    🗑️ Eliminar
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
@@ -239,26 +269,33 @@ const AdminServicios = () => {
 
 const styles = {
   container: { padding: '20px', maxWidth: '1200px', margin: '0 auto' },
-  title: { ...FONTS.title, marginBottom: '5px' },
-  
-  header: { 
-    display: 'flex', 
-    justifyContent: 'space-between', 
-    alignItems: 'center', 
-    marginBottom: '20px', 
-    flexWrap: 'wrap' 
+  title: {
+    ...FONTS.title,
+    marginBottom: '5px',
+    color: '#FFFFFF',
+    textShadow: '0 2px 12px rgba(0,0,0,0.2)',
   },
-  btnCrear: { 
-    padding: '10px 20px', 
-    backgroundColor: COLORS.secondary, 
-    color: COLORS.textLight, 
-    border: 'none', 
-    borderRadius: '8px', 
+
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '20px',
+    flexWrap: 'wrap',
+    gap: '10px',
+  },
+  btnCrear: {
+    padding: '10px 20px',
+    backgroundColor: COLORS.secondary,
+    color: COLORS.textLight,
+    border: 'none',
+    borderRadius: '8px',
     cursor: 'pointer',
     fontWeight: 'bold',
     transition: 'all 0.3s ease',
+    boxShadow: '0 4px 15px rgba(34,197,94,0.4)',
   },
-  
+
   form: {
     ...CARDS.default,
     marginBottom: '20px',
@@ -268,114 +305,164 @@ const styles = {
     color: COLORS.primary,
     marginBottom: '15px',
   },
-  formGrid: { 
-    display: 'grid', 
-    gridTemplateColumns: '1fr 1fr', 
-    gap: '15px' 
+  formGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))',
+    gap: '15px',
   },
   input: {
     ...INPUTS.default,
   },
-  selectGroup: { 
-    gridColumn: '1 / -1' 
+  selectGroup: {
+    gridColumn: '1 / -1',
   },
-  selectLabel: { 
-    display: 'block', 
-    marginBottom: '5px', 
-    fontWeight: 'bold', 
+  selectLabel: {
+    display: 'block',
+    marginBottom: '5px',
+    fontWeight: 'bold',
     color: COLORS.textDark,
   },
   select: {
     ...INPUTS.default,
     backgroundColor: COLORS.white,
   },
-  selectHelp: { 
-    fontSize: '12px', 
-    color: COLORS.textGray, 
-    marginTop: '5px' 
+  selectHelp: {
+    fontSize: '12px',
+    color: COLORS.textGray,
+    marginTop: '5px',
   },
-  formActions: { 
-    display: 'flex', 
-    gap: '10px', 
-    marginTop: '15px' 
+  formActions: {
+    display: 'flex',
+    gap: '10px',
+    marginTop: '15px',
+    flexWrap: 'wrap',
   },
-  btnGuardar: { 
-    padding: '10px 20px', 
-    backgroundColor: COLORS.primary, 
-    color: COLORS.textLight, 
-    border: 'none', 
-    borderRadius: '8px', 
+  btnGuardar: {
+    padding: '10px 20px',
+    backgroundColor: COLORS.primary,
+    color: COLORS.textLight,
+    border: 'none',
+    borderRadius: '8px',
     cursor: 'pointer',
     fontWeight: 'bold',
     transition: 'all 0.3s ease',
   },
-  btnCancelar: { 
-    padding: '10px 20px', 
-    backgroundColor: COLORS.silverDark, 
-    color: COLORS.textLight, 
-    border: 'none', 
-    borderRadius: '8px', 
+  btnCancelar: {
+    padding: '10px 20px',
+    backgroundColor: COLORS.silverDark,
+    color: COLORS.textLight,
+    border: 'none',
+    borderRadius: '8px',
     cursor: 'pointer',
     fontWeight: 'bold',
     transition: 'all 0.3s ease',
   },
-  
-  grid: { 
-    display: 'grid', 
-    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', 
-    gap: '20px' 
+
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(min(320px, 100%), 1fr))',
+    gap: '20px',
   },
   card: {
     ...CARDS.default,
-    padding: '20px',
+    padding: '22px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
   },
   servicioNombre: {
     fontSize: '18px',
     fontWeight: 'bold',
     color: COLORS.primary,
+    marginBottom: '5px',
   },
-  servicioDesc: {
+
+  // ✅ LISTA CON VIÑETAS
+  descList: {
+    listStyle: 'none',
+    padding: 0,
+    margin: '4px 0 10px 0',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '6px',
+  },
+  descItem: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '8px',
+    fontSize: '14px',
+    lineHeight: 1.4,
+  },
+  descBullet: {
+    color: COLORS.primary,
+    fontWeight: 'bold',
+    fontSize: '16px',
+    lineHeight: '1.4',
+    flexShrink: 0,
+  },
+  descText: {
     color: COLORS.textGray,
     fontSize: '14px',
-    marginTop: '5px',
+    textTransform: 'capitalize',
+    letterSpacing: '0.2px',
+  },
+  sinDesc: {
+    color: COLORS.textGray,
+    fontSize: '13px',
+    fontStyle: 'italic',
+    margin: '4px 0 10px 0',
+  },
+
+  infoRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: '4px',
+    paddingTop: '10px',
+    borderTop: '1px dashed rgba(0,0,0,0.1)',
+    flexWrap: 'wrap',
+    gap: '8px',
   },
   servicioPrice: {
     fontSize: '1.5rem',
     fontWeight: 'bold',
     color: COLORS.success,
-    marginTop: '10px',
   },
   servicioTime: {
     color: COLORS.textGray,
     fontSize: '14px',
+    fontWeight: '600',
   },
   servicioTipo: {
     color: COLORS.primaryLight,
     fontSize: '14px',
-    marginTop: '5px',
     fontWeight: 'bold',
+    margin: '4px 0',
   },
-  cardActions: { 
-    display: 'flex', 
-    gap: '10px', 
-    marginTop: '15px' 
+  cardActions: {
+    display: 'flex',
+    gap: '10px',
+    marginTop: '10px',
+    flexWrap: 'wrap',
   },
-  btnEditar: { 
-    padding: '8px 15px', 
-    backgroundColor: COLORS.warning, 
-    color: COLORS.textDark, 
-    border: 'none', 
-    borderRadius: '5px', 
+  btnEditar: {
+    flex: 1,
+    padding: '10px 15px',
+    backgroundColor: COLORS.warning,
+    color: COLORS.textDark,
+    border: 'none',
+    borderRadius: '8px',
     cursor: 'pointer',
     fontWeight: 'bold',
     transition: 'all 0.3s ease',
   },
-  btnEliminar: { 
-    padding: '8px 15px', 
-    backgroundColor: COLORS.error, 
-    color: COLORS.textLight, 
-    border: 'none', 
-    borderRadius: '5px', 
+  btnEliminar: {
+    flex: 1,
+    padding: '10px 15px',
+    backgroundColor: COLORS.error,
+    color: COLORS.textLight,
+    border: 'none',
+    borderRadius: '8px',
     cursor: 'pointer',
     fontWeight: 'bold',
     transition: 'all 0.3s ease',
