@@ -251,7 +251,7 @@ const Home = ({ user }) => {
           <motion.a
             variants={fadeInUp}
             whileHover={cardHover}
-            href="https://www.google.com/maps/search/?api=1&query=C.+31+%2387-A%2C+97510+Temax%2C+Yuc."
+            href="https://maps.app.goo.gl/a2JeJ2gjLsoMcG9N7"
             target="_blank"
             rel="noopener noreferrer"
             style={styles.contactoCard}
