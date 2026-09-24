@@ -216,6 +216,66 @@ const Home = ({ user }) => {
         )}
       </motion.section>
 
+      {/* SECCIÓN DE CONTACTO */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={staggerContainer}
+        style={styles.contactoSection}
+      >
+        <motion.h2 variants={fadeInUp} style={styles.contactoTitle}>
+          📞 Contáctanos
+        </motion.h2>
+        <motion.p variants={fadeInUp} style={styles.contactoSub}>
+          Estamos disponibles para atenderte por cualquiera de estos medios
+        </motion.p>
+
+        <div style={styles.contactoGrid}>
+          {/* Teléfono / WhatsApp */}
+          <motion.a
+            variants={fadeInUp}
+            whileHover={cardHover}
+            href="https://wa.me/529993336921?text=Hola,%20quiero%20agendar%20una%20cita%20en%20HI%20PERFORMANCE"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={styles.contactoCard}
+          >
+            <div style={styles.contactoIcon}>📞</div>
+            <h4 style={styles.contactoCardTitle}>Teléfono / WhatsApp</h4>
+            <p style={styles.contactoCardValue}>999 333 6921</p>
+            <span style={styles.contactoCardHint}>Toca para escribirnos</span>
+          </motion.a>
+
+          {/* Dirección */}
+          <motion.a
+            variants={fadeInUp}
+            whileHover={cardHover}
+            href="https://www.google.com/maps/search/?api=1&query=C.+31+%2387-A%2C+97510+Temax%2C+Yuc."
+            target="_blank"
+            rel="noopener noreferrer"
+            style={styles.contactoCard}
+          >
+            <div style={styles.contactoIcon}>📍</div>
+            <h4 style={styles.contactoCardTitle}>Dirección</h4>
+            <p style={styles.contactoCardValue}>C. 31 #87-A</p>
+            <p style={styles.contactoCardSub}>97510 Temax, Yuc.</p>
+            <span style={styles.contactoCardHint}>Ver en Google Maps</span>
+          </motion.a>
+
+          {/* Horario */}
+          <motion.div
+            variants={fadeInUp}
+            style={styles.contactoCard}
+          >
+            <div style={styles.contactoIcon}>🕐</div>
+            <h4 style={styles.contactoCardTitle}>Horario de atención</h4>
+            <p style={styles.contactoCardValue}>Sábado: 8:30 am – 6:00 pm</p>
+            <p style={styles.contactoCardValue}>Domingo: 8:00 am – 3:00 pm</p>
+          </motion.div>
+        </div>
+      </motion.section>
+
       {/* AGENDAR CITA (OVERLAY) */}
       {mostrarAgendar && (
         <AgendarCita
@@ -900,6 +960,87 @@ const styles = {
     fontSize: 'clamp(11px, 3vw, 14px)',
     padding: '0 4px',
     wordBreak: 'break-word',
+  },
+  // SECCIÓN DE CONTACTO
+  contactoSection: {
+    padding: '40px 0',
+    maxWidth: '1200px',
+    margin: '0 auto',
+    marginTop: '20px',
+  },
+  contactoTitle: {
+    ...FONTS.title,
+    textAlign: 'center',
+    marginBottom: '10px',
+    color: '#fff',
+    textShadow: '0 2px 12px rgba(0,0,0,0.2)',
+  },
+  contactoSub: {
+    ...FONTS.small,
+    color: 'rgba(255,255,255,0.85)',
+    textAlign: 'center',
+    marginBottom: '40px',
+    fontSize: 'clamp(13px, 3vw, 15px)',
+  },
+  contactoGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))',
+    gap: '20px',
+  },
+  contactoCard: {
+    background: 'linear-gradient(135deg, rgba(74,10,122,0.85) 0%, rgba(106,13,173,0.75) 100%)',
+    backdropFilter: 'blur(16px)',
+    borderRadius: '24px',
+    padding: '30px 25px',
+    textAlign: 'center',
+    border: '1px solid rgba(255,255,255,0.2)',
+    boxShadow: '0 15px 40px rgba(0,0,0,0.25)',
+    textDecoration: 'none',
+    color: '#fff',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '6px',
+    transition: 'all 0.3s ease',
+    cursor: 'pointer',
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  contactoIcon: {
+    fontSize: '44px',
+    marginBottom: '8px',
+    filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.3))',
+  },
+  contactoCardTitle: {
+    ...FONTS.subtitle,
+    color: '#86EFAC',
+    fontSize: '15px',
+    fontWeight: '700',
+    letterSpacing: '0.5px',
+    textTransform: 'uppercase',
+    marginBottom: '6px',
+  },
+  contactoCardValue: {
+    ...FONTS.body,
+    color: '#FFFFFF',
+    fontSize: 'clamp(15px, 3.5vw, 18px)',
+    fontWeight: '700',
+    margin: 0,
+    lineHeight: 1.4,
+  },
+  contactoCardSub: {
+    ...FONTS.small,
+    color: 'rgba(255,255,255,0.85)',
+    fontSize: '14px',
+    margin: 0,
+  },
+  contactoCardHint: {
+    ...FONTS.small,
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: '12px',
+    fontStyle: 'italic',
+    marginTop: '8px',
   },
 };
 
