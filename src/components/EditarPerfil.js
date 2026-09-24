@@ -198,7 +198,7 @@ const EditarPerfil = ({ user, onPerfilActualizado }) => {
               type="submit"
               style={loading ? styles.buttonDisabled : styles.button}
               disabled={loading}
-              whileHover={loading ? {} : { scale: 1.02, boxShadow: '0 12px 40px rgba(106,13,173,0.5)' }}
+              whileHover={loading ? {} : { scale: 1.02, boxShadow: '0 12px 40px rgba(34,197,94,0.5)' }}
               whileTap={loading ? {} : { scale: 0.98 }}
             >
               {loading ? '⏳ Guardando...' : '💾 Guardar Cambios'}
@@ -218,39 +218,42 @@ const styles = {
     alignItems: 'center',
     padding: 'clamp(15px, 4vw, 40px) clamp(10px, 3vw, 20px)',
   },
+  // ✅ TARJETA MORADA OSCURA SEMITRANSPARENTE
   card: {
     width: '100%',
     maxWidth: '540px',
-    background: 'linear-gradient(135deg, rgba(255,255,255,0.97) 0%, rgba(245,240,255,0.97) 100%)',
+    background: 'linear-gradient(135deg, rgba(74,10,122,0.92) 0%, rgba(106,13,173,0.88) 50%, rgba(139,92,246,0.85) 100%)',
     backdropFilter: 'blur(20px)',
     borderRadius: '28px',
-    boxShadow: '0 25px 70px rgba(74,10,122,0.35), 0 8px 24px rgba(0,0,0,0.08)',
-    border: '1px solid rgba(255,255,255,0.6)',
+    boxShadow: '0 25px 70px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.15)',
+    border: '1px solid rgba(255,255,255,0.2)',
     overflow: 'hidden',
     position: 'relative',
   },
   topBar: {
     height: '6px',
-    background: 'linear-gradient(90deg, #4A0A7A 0%, #6A0DAD 35%, #8B5CF6 65%, #22C55E 100%)',
+    background: 'linear-gradient(90deg, #22C55E 0%, #8B5CF6 50%, #22C55E 100%)',
     width: '100%',
   },
   cardContent: {
     padding: 'clamp(25px, 5vw, 40px)',
   },
+  // ✅ TÍTULOS EN BLANCO SOBRE FONDO MORADO
   title: {
     ...FONTS.title,
     textAlign: 'center',
     marginBottom: '5px',
-    color: COLORS.primary,
+    color: '#FFFFFF',
     fontSize: 'clamp(22px, 5vw, 28px)',
     fontWeight: '800',
     letterSpacing: '0.5px',
+    textShadow: '0 2px 12px rgba(0,0,0,0.2)',
   },
   subtitle: {
     ...FONTS.small,
     textAlign: 'center',
     marginBottom: '30px',
-    color: COLORS.textGray,
+    color: 'rgba(255,255,255,0.85)',
     fontSize: 'clamp(13px, 3.5vw, 15px)',
   },
   row: {
@@ -265,41 +268,46 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
   },
+  // ✅ LABELS EN VERDE CLARO PARA QUE DESTAQUEN
   label: {
     fontSize: '13px',
-    fontWeight: '600',
-    color: COLORS.primary,
+    fontWeight: '700',
+    color: '#86EFAC',
     marginBottom: '6px',
     letterSpacing: '0.3px',
+    textShadow: '0 1px 4px rgba(0,0,0,0.2)',
   },
+  // ✅ INPUTS BLANCOS SOBRE FONDO MORADO (buen contraste)
   input: {
     ...INPUTS.default,
     marginBottom: 0,
-    background: 'rgba(255,255,255,0.7)',
-    border: '2px solid rgba(139,92,246,0.15)',
+    background: 'rgba(255,255,255,0.95)',
+    border: '2px solid rgba(255,255,255,0.3)',
     borderRadius: '12px',
     padding: '12px 14px',
     fontSize: '15px',
     transition: 'all 0.3s ease',
     color: COLORS.textDark,
+    outline: 'none',
   },
   inputDisabled: {
     ...INPUTS.default,
     marginBottom: 0,
-    background: 'rgba(240,235,250,0.8)',
-    border: '2px solid rgba(139,92,246,0.1)',
+    background: 'rgba(255,255,255,0.6)',
+    border: '2px solid rgba(255,255,255,0.15)',
     borderRadius: '12px',
     padding: '12px 14px',
     fontSize: '15px',
-    color: COLORS.textGray,
+    color: 'rgba(31,41,55,0.6)',
     cursor: 'not-allowed',
   },
   helperText: {
     fontSize: '11px',
-    color: COLORS.textGray,
+    color: 'rgba(255,255,255,0.7)',
     marginTop: '4px',
     fontStyle: 'italic',
   },
+  // ✅ BOTÓN VERDE CON GRADIENTE
   button: {
     ...BUTTONS.primary,
     width: '100%',
@@ -309,8 +317,8 @@ const styles = {
     borderRadius: '14px',
     fontWeight: '700',
     letterSpacing: '0.5px',
-    background: 'linear-gradient(135deg, #6A0DAD 0%, #8B5CF6 100%)',
-    boxShadow: '0 8px 25px rgba(106,13,173,0.35)',
+    background: 'linear-gradient(135deg, #22C55E 0%, #15803D 100%)',
+    boxShadow: '0 8px 25px rgba(34,197,94,0.4)',
     border: 'none',
     color: '#fff',
     cursor: 'pointer',
@@ -324,12 +332,11 @@ const styles = {
     borderRadius: '14px',
     fontWeight: '700',
     letterSpacing: '0.5px',
-    background: '#9CA3AF',
+    background: 'rgba(255,255,255,0.3)',
     boxShadow: 'none',
     border: 'none',
-    color: '#fff',
+    color: 'rgba(255,255,255,0.7)',
     cursor: 'not-allowed',
-    opacity: 0.7,
   },
   separator: {
     display: 'flex',
@@ -340,11 +347,12 @@ const styles = {
   separatorLine: {
     flex: 1,
     height: '1px',
-    background: 'linear-gradient(90deg, transparent 0%, rgba(139,92,246,0.3) 50%, transparent 100%)',
+    background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
   },
+  // ✅ SEPARADOR EN VERDE CLARO
   separatorText: {
     ...FONTS.small,
-    color: COLORS.primary,
+    color: '#86EFAC',
     whiteSpace: 'nowrap',
     fontSize: '12px',
     fontWeight: '600',
