@@ -100,7 +100,6 @@ const EditarPerfil = ({ user, onPerfilActualizado }) => {
         transition={{ duration: 0.5 }}
         style={styles.card}
       >
-        {/* Barra decorativa superior con gradiente de marca */}
         <div style={styles.topBar} />
 
         <div style={styles.cardContent}>
@@ -218,7 +217,6 @@ const styles = {
     alignItems: 'center',
     padding: 'clamp(15px, 4vw, 40px) clamp(10px, 3vw, 20px)',
   },
-  // ✅ TARJETA MORADA OSCURA SEMITRANSPARENTE
   card: {
     width: '100%',
     maxWidth: '540px',
@@ -238,7 +236,6 @@ const styles = {
   cardContent: {
     padding: 'clamp(25px, 5vw, 40px)',
   },
-  // ✅ TÍTULOS EN BLANCO SOBRE FONDO MORADO
   title: {
     ...FONTS.title,
     textAlign: 'center',
@@ -268,7 +265,6 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
   },
-  // ✅ LABELS EN VERDE CLARO PARA QUE DESTAQUEN
   label: {
     fontSize: '13px',
     fontWeight: '700',
@@ -277,7 +273,6 @@ const styles = {
     letterSpacing: '0.3px',
     textShadow: '0 1px 4px rgba(0,0,0,0.2)',
   },
-  // ✅ INPUTS BLANCOS SOBRE FONDO MORADO (buen contraste)
   input: {
     ...INPUTS.default,
     marginBottom: 0,
@@ -307,7 +302,6 @@ const styles = {
     marginTop: '4px',
     fontStyle: 'italic',
   },
-  // ✅ BOTÓN VERDE CON GRADIENTE
   button: {
     ...BUTTONS.primary,
     width: '100%',
@@ -349,7 +343,6 @@ const styles = {
     height: '1px',
     background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
   },
-  // ✅ SEPARADOR EN VERDE CLARO
   separatorText: {
     ...FONTS.small,
     color: '#86EFAC',
