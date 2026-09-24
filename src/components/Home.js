@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { FaWater, FaShieldAlt, FaClock, FaStar, FaArrowRight } from 'react-icons/fa';
+import { FaWater, FaShieldAlt, FaStar } from 'react-icons/fa';
 import api from '../services/api';
 import Toast from './Toast';
 import Loader from './Loader';
@@ -42,10 +42,8 @@ const Home = ({ user }) => {
       const params = filtroVehiculo !== 'todos' ? `?tipo_vehiculo=${filtroVehiculo}` : '';
       const response = await api.get(`/servicios${params}`);
       
-      // ✅ LOG DE DEPURACIÓN (bórralo cuando funcione)
       console.log('Respuesta de /servicios:', response.data);
       
-      // ✅ VALIDACIÓN: si no es array, lo convertimos o mostramos error
       const data = Array.isArray(response.data) 
         ? response.data 
         : (response.data?.servicios || response.data?.data || []);
@@ -118,31 +116,12 @@ const Home = ({ user }) => {
             <span style={{ color: COLORS.silver }}> PERFORMANCE</span>
           </motion.h1>
 
-          {/* ✅ NUEVA DESCRIPCIÓN BREVE */}
           <motion.p style={styles.heroSubtitle} variants={fadeInUp}>
             Somos tu lavadero de confianza. Cuidamos cada detalle de tu vehículo
             con productos premium y un acabado impecable.<br />
             <strong>Agendá tu cita en segundos.</strong>
           </motion.p>
-
-          <motion.div style={styles.heroButtons} variants={fadeInUp}>
-            <motion.button
-              whileHover={{ scale: 1.05, boxShadow: '0 12px 40px rgba(106,13,173,0.4)' }}
-              whileTap={{ scale: 0.95 }}
-              style={styles.btnPrimary}
-              onClick={() => document.getElementById('servicios').scrollIntoView({ behavior: 'smooth' })}
-            >
-              Agendar cita <FaArrowRight style={{ marginLeft: '8px' }} />
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05, boxShadow: '0 8px 30px rgba(106,13,173,0.15)' }}
-              whileTap={{ scale: 0.95 }}
-              style={styles.btnOutline}
-              onClick={() => document.getElementById('servicios').scrollIntoView({ behavior: 'smooth' })}
-            >
-              Ver Servicios
-            </motion.button>
-          </motion.div>
+          {/* ✅ Botones eliminados */}
         </div>
         <motion.div
           style={styles.heroImage}
@@ -239,9 +218,6 @@ const Home = ({ user }) => {
           </motion.div>
         )}
       </motion.section>
-
-      {/* ❌ SECCIÓN DE BENEFICIOS ELIMINADA */}
-      {/* ❌ SECCIÓN CTA FINAL ELIMINADA */}
 
       {/* AGENDAR CITA (OVERLAY) */}
       {mostrarAgendar && (
@@ -537,6 +513,7 @@ const styles = {
     color: COLORS.textGray,
     marginTop: '10px',
   },
+  // HERO
   hero: {
     display: 'flex',
     flexDirection: 'row',
@@ -555,17 +532,19 @@ const styles = {
     flex: 1,
     minWidth: '280px',
   },
+  // ✅ TÍTULO RESPONSIVE: se adapta al ancho de la pantalla
   heroTitle: {
-    fontSize: '3.5rem',
+    fontSize: 'clamp(1.8rem, 7vw, 3.5rem)',
     fontWeight: '800',
-    letterSpacing: '2px',
+    letterSpacing: '1px',
     marginBottom: '20px',
     lineHeight: 1.2,
     color: '#fff',
     textShadow: '0 4px 20px rgba(0,0,0,0.15)',
+    wordBreak: 'break-word',
   },
   heroSubtitle: {
-    fontSize: '1.2rem',
+    fontSize: 'clamp(1rem, 2.5vw, 1.2rem)',
     color: 'rgba(255,255,255,0.95)',
     marginBottom: '30px',
     lineHeight: 1.6,
@@ -622,6 +601,7 @@ const styles = {
     boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
     border: '1px solid rgba(255,255,255,0.2)',
   },
+  // SECCIÓN SERVICIOS
   section: {
     padding: '40px 0',
     maxWidth: '1200px',
@@ -744,6 +724,7 @@ const styles = {
     fontSize: '16px',
     letterSpacing: '0.3px',
   },
+  // MODAL AGENDAR
   modalOverlay: {
     position: 'fixed',
     top: 0,
@@ -832,6 +813,7 @@ const styles = {
     borderRadius: '50px',
     padding: '10px 24px',
   },
+  // CALENDARIO
   calendarioContainer: {
     background: 'rgba(255,255,255,0.5)',
     backdropFilter: 'blur(8px)',
