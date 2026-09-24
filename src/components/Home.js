@@ -75,6 +75,15 @@ const Home = ({ user }) => {
     setServicioSeleccionado(null);
   };
 
+  // ✅ Convierte la descripción larga en lista de items
+  const parseDescripcion = (desc) => {
+    if (!desc) return [];
+    return desc
+      .split(/\s*-\s*/)
+      .map(item => item.trim())
+      .filter(item => item.length > 0);
+  };
+
   // ==========================================
   // RENDER ADMIN
   // ==========================================
@@ -182,6 +191,7 @@ const Home = ({ user }) => {
           <div style={styles.grid}>
             {servicios.map((item, index) => {
               const icons = [<FaWater key="water" />, <FaShieldAlt key="shield" />, <FaStar key="star" />];
+              const items = parseDescripcion(item.descripcion);
               return (
                 <motion.div
                   key={item.id}
@@ -195,7 +205,21 @@ const Home = ({ user }) => {
                     {icons[index % icons.length]}
                   </div>
                   <h4 style={styles.cardTitle}>{item.nombre}</h4>
-                  <p style={styles.cardDesc}>{item.descripcion}</p>
+
+                  {/* ✅ Lista con viñetas */}
+                  {items.length > 0 ? (
+                    <ul style={styles.descList}>
+                      {items.map((punto, i) => (
+                        <li key={i} style={styles.descItem}>
+                          <span style={styles.descBullet}>•</span>
+                          <span style={styles.descText}>{punto}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p style={styles.cardDesc}>Sin descripción</p>
+                  )}
+
                   <p style={styles.cardPrice}>${item.precio}</p>
                   <p style={styles.cardTime}>⏱️ {item.tiempo_base_minutos} min</p>
                   {item.tipo_vehiculo && item.tipo_vehiculo !== 'todos' && (
@@ -711,7 +735,7 @@ const styles = {
   },
   grid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(min(300px, 100%), 1fr))',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(min(320px, 100%), 1fr))',
     gap: '30px',
     marginTop: '30px',
   },
@@ -726,6 +750,9 @@ const styles = {
     textAlign: 'center',
     position: 'relative',
     overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
   },
   serviceIcon: {
     fontSize: '2.5rem',
@@ -738,12 +765,43 @@ const styles = {
     color: COLORS.primary,
     fontSize: '20px',
     fontWeight: '700',
+    marginBottom: '8px',
   },
   cardDesc: {
     ...FONTS.body,
     color: COLORS.textGray,
     marginTop: '8px',
     lineHeight: 1.5,
+  },
+  // ✅ LISTA CON VIÑETAS
+  descList: {
+    listStyle: 'none',
+    padding: 0,
+    margin: '10px 0',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '6px',
+    textAlign: 'left',
+  },
+  descItem: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '8px',
+    fontSize: '14px',
+    lineHeight: 1.4,
+  },
+  descBullet: {
+    color: COLORS.primary,
+    fontWeight: 'bold',
+    fontSize: '16px',
+    lineHeight: '1.4',
+    flexShrink: 0,
+  },
+  descText: {
+    color: COLORS.textGray,
+    fontSize: '14px',
+    textTransform: 'capitalize',
+    letterSpacing: '0.2px',
   },
   cardPrice: {
     fontSize: '1.8rem',
