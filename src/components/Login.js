@@ -18,11 +18,11 @@ const Login = ({ onLogin, onRegistro }) => {
 
     try {
       const response = await api.post('/auth/login', { email, password });
-      
+
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
       }
-      
+
       onLogin(response.data.user);
     } catch (err) {
       console.error('Error de login:', err.response?.data || err.message);
@@ -38,11 +38,11 @@ const Login = ({ onLogin, onRegistro }) => {
   // ==========================================
   const cardVariants = {
     hidden: { opacity: 0, y: 50, scale: 0.95 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
+    visible: {
+      opacity: 1,
+      y: 0,
       scale: 1,
-      transition: { 
+      transition: {
         duration: 0.6,
         ease: 'easeOut',
         staggerChildren: 0.1
@@ -63,14 +63,14 @@ const Login = ({ onLogin, onRegistro }) => {
         animate="visible"
         variants={cardVariants}
       >
-        <motion.div 
+        <motion.div
           style={styles.logoWrapper}
           variants={itemVariants}
         >
           <Logo size="xlarge" showText={true} />
         </motion.div>
-        
-        <motion.h2 
+
+        <motion.h2
           style={styles.subtitle}
           variants={itemVariants}
         >
@@ -78,7 +78,7 @@ const Login = ({ onLogin, onRegistro }) => {
         </motion.h2>
 
         {error && (
-          <motion.p 
+          <motion.p
             style={styles.error}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -89,7 +89,7 @@ const Login = ({ onLogin, onRegistro }) => {
         )}
 
         <form onSubmit={handleSubmit}>
-          <motion.div 
+          <motion.div
             style={styles.inputWrapper}
             variants={itemVariants}
           >
@@ -104,7 +104,7 @@ const Login = ({ onLogin, onRegistro }) => {
             />
           </motion.div>
 
-          <motion.div 
+          <motion.div
             style={styles.inputWrapper}
             variants={itemVariants}
           >
@@ -142,12 +142,7 @@ const Login = ({ onLogin, onRegistro }) => {
           ¿No tienes cuenta? Regístrate
         </motion.button>
 
-        <motion.p 
-          style={styles.demo}
-          variants={itemVariants}
-        >
-          Admin: admin@hiperformance.com / admin123
-        </motion.p>
+        {/* ❌ Credenciales de demo ELIMINADAS */}
       </motion.div>
     </div>
   );
@@ -164,7 +159,7 @@ const styles = {
     alignItems: 'center',
     padding: '20px',
     position: 'relative',
-    background: 'transparent', // El fondo animado viene de App.css
+    background: 'transparent',
   },
   card: {
     backgroundColor: 'rgba(255, 255, 255, 0.85)',
@@ -260,14 +255,6 @@ const styles = {
     borderLeft: '4px solid #EF4444',
     fontSize: '14px',
     fontWeight: '500',
-  },
-  demo: {
-    textAlign: 'center',
-    marginTop: '24px',
-    fontSize: '14px',
-    color: COLORS.silverDark,
-    borderTop: '1px solid rgba(0, 0, 0, 0.05)',
-    paddingTop: '20px',
   },
 };
 
