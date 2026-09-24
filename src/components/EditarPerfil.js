@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import api from '../services/api';
 import Toast from './Toast';
-import { COLORS, FONTS, INPUTS, BUTTONS, CARDS } from '../styles/theme';
+import { COLORS, FONTS, INPUTS, BUTTONS } from '../styles/theme';
 
 const EditarPerfil = ({ user, onPerfilActualizado }) => {
   const [formData, setFormData] = useState({
