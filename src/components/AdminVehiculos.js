@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../services/api';
 import Toast from './Toast';
 import Loader from './Loader';
+import ConfirmModal from './ConfirmModal';
 import { COLORS, FONTS, CARDS } from '../styles/theme';
 
 const AdminVehiculos = () => {
@@ -9,6 +10,9 @@ const AdminVehiculos = () => {
   const [loading, setLoading] = useState(true);
   const [busqueda, setBusqueda] = useState('');
   const [toast, setToast] = useState(null);
+
+  // ✅ Estado para el modal de confirmación
+  const [confirmData, setConfirmData] = useState({ open: false, id: null });
 
   useEffect(() => {
     cargarVehiculos();
@@ -26,14 +30,21 @@ const AdminVehiculos = () => {
     }
   };
 
-  const eliminarVehiculo = async (id) => {
-    if (!window.confirm('¿Eliminar este vehículo?')) return;
+  // ✅ Ahora solo abre el modal
+  const eliminarVehiculo = (id) => {
+    setConfirmData({ open: true, id });
+  };
+
+  // ✅ Función que sí elimina al confirmar
+  const confirmarEliminar = async () => {
     try {
-      await api.delete(`/vehiculos/${id}`);
+      await api.delete(`/vehiculos/${confirmData.id}`);
       setToast({ message: '✅ Vehículo eliminado correctamente', type: 'success' });
       cargarVehiculos();
     } catch (error) {
       setToast({ message: '❌ Error al eliminar vehículo', type: 'error' });
+    } finally {
+      setConfirmData({ open: false, id: null });
     }
   };
 
@@ -64,6 +75,18 @@ const AdminVehiculos = () => {
           onClose={() => setToast(null)} 
         />
       )}
+
+      {/* ✅ Modal de confirmación */}
+      <ConfirmModal
+        isOpen={confirmData.open}
+        title="¿Eliminar vehículo?"
+        message="Esta acción eliminará el vehículo del registro. ¿Estás seguro de que quieres continuar?"
+        confirmText="Sí, eliminar"
+        cancelText="Cancelar"
+        tipo="danger"
+        onConfirm={confirmarEliminar}
+        onCancel={() => setConfirmData({ open: false, id: null })}
+      />
 
       <h2 style={styles.title}>🚗 Gestión de Vehículos</h2>
       <p style={styles.subtitle}>Vehículos registrados por los clientes</p>
@@ -116,7 +139,6 @@ const styles = {
   title: { ...FONTS.title, marginBottom: '5px' },
   subtitle: { ...FONTS.subtitle, color: COLORS.textGray, marginBottom: '20px' },
   resultados: { marginBottom: '15px', color: COLORS.textGray, fontSize: '14px' },
-  
   buscador: {
     ...CARDS.default,
     width: '100%',

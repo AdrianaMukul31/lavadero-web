@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
 import Toast from './Toast';
+import ConfirmModal from './ConfirmModal';
 
 const AdminHorarios = () => {
   const [horarios, setHorarios] = useState([]);
@@ -8,6 +9,9 @@ const AdminHorarios = () => {
   const [loading, setLoading] = useState(true);
   const [nuevoFestivo, setNuevoFestivo] = useState({ fecha: '', descripcion: '' });
   const [toast, setToast] = useState(null);
+
+  // ✅ Estado para el modal de confirmación
+  const [confirmData, setConfirmData] = useState({ open: false, id: null });
 
   const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
@@ -59,14 +63,21 @@ const AdminHorarios = () => {
     }
   };
 
-  const eliminarFestivo = async (id) => {
-    if (!window.confirm('¿Eliminar este día festivo?')) return;
+  // ✅ Ahora solo abre el modal
+  const eliminarFestivo = (id) => {
+    setConfirmData({ open: true, id });
+  };
+
+  // ✅ Función que sí elimina al confirmar
+  const confirmarEliminar = async () => {
     try {
-      await api.delete(`/horarios/festivos/${id}`);
+      await api.delete(`/horarios/festivos/${confirmData.id}`);
       setToast({ message: '✅ Día festivo eliminado', type: 'success' });
       cargarDatos();
     } catch (error) {
       setToast({ message: '❌ Error al eliminar día festivo', type: 'error' });
+    } finally {
+      setConfirmData({ open: false, id: null });
     }
   };
 
@@ -79,6 +90,18 @@ const AdminHorarios = () => {
           onClose={() => setToast(null)}
         />
       )}
+
+      {/* ✅ Modal de confirmación */}
+      <ConfirmModal
+        isOpen={confirmData.open}
+        title="¿Eliminar día festivo?"
+        message="Este día dejará de estar marcado como festivo. ¿Estás seguro de que quieres eliminarlo?"
+        confirmText="Sí, eliminar"
+        cancelText="Cancelar"
+        tipo="danger"
+        onConfirm={confirmarEliminar}
+        onCancel={() => setConfirmData({ open: false, id: null })}
+      />
 
       <h2 style={styles.title}>🕐 Gestión de Horarios</h2>
       <p style={styles.subtitle}>
@@ -112,7 +135,6 @@ const AdminHorarios = () => {
                     )}
                   </h4>
 
-                  {/* Activo */}
                   <div style={styles.horarioRow}>
                     <label style={styles.rowLabel}>Activo:</label>
                     <input
@@ -123,7 +145,6 @@ const AdminHorarios = () => {
                     />
                   </div>
 
-                  {/* Apertura */}
                   <div style={styles.horarioRow}>
                     <label style={styles.rowLabel}>Apertura:</label>
                     <input
@@ -135,7 +156,6 @@ const AdminHorarios = () => {
                     />
                   </div>
 
-                  {/* Cierre */}
                   <div style={styles.horarioRow}>
                     <label style={styles.rowLabel}>Cierre:</label>
                     <input
@@ -147,7 +167,6 @@ const AdminHorarios = () => {
                     />
                   </div>
 
-                  {/* Intervalo */}
                   <div style={styles.horarioRow}>
                     <label style={styles.rowLabel}>Intervalo:</label>
                     <input
@@ -236,7 +255,6 @@ const styles = {
     textAlign: 'center',
     padding: '20px',
   },
-
   grid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(min(240px, 100%), 1fr))',
@@ -248,9 +266,9 @@ const styles = {
     padding: '15px',
     borderRadius: '12px',
     boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
-    overflow: 'hidden',         // ✅ evita que nada se salga
+    overflow: 'hidden',
     boxSizing: 'border-box',
-    minWidth: 0,                // ✅ permite flex/grid shrinking
+    minWidth: 0,
   },
   diaNombre: {
     marginBottom: '12px',
@@ -275,15 +293,13 @@ const styles = {
     fontWeight: 'bold',
     whiteSpace: 'nowrap',
   },
-
-  // ✅ Filas responsivas
   horarioRow: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: '8px',
     gap: '8px',
-    minWidth: 0,                 // ✅ evita overflow
+    minWidth: 0,
     flexWrap: 'wrap',
   },
   rowLabel: {
@@ -299,16 +315,14 @@ const styles = {
     cursor: 'pointer',
     flexShrink: 0,
   },
-
-  // ✅ Inputs responsivos que NO se salen
   inputHora: {
     padding: '5px 6px',
     borderRadius: '6px',
     border: '1px solid #ddd',
     fontSize: '13px',
     flex: 1,
-    minWidth: 0,                // ✅ clave para que no se desborde
-    maxWidth: '130px',          // ✅ límite superior
+    minWidth: 0,
+    maxWidth: '130px',
     boxSizing: 'border-box',
     fontFamily: 'inherit',
   },
@@ -323,7 +337,6 @@ const styles = {
     boxSizing: 'border-box',
     fontFamily: 'inherit',
   },
-
   festivoForm: {
     display: 'flex',
     gap: '10px',

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../services/api';
 import Toast from './Toast';
 import Loader from './Loader';
+import ConfirmModal from './ConfirmModal';
 import { COLORS, FONTS, CARDS, INPUTS } from '../styles/theme';
 
 const AdminServicios = () => {
@@ -10,6 +11,9 @@ const AdminServicios = () => {
   const [mostrarForm, setMostrarForm] = useState(false);
   const [editando, setEditando] = useState(null);
   const [toast, setToast] = useState(null);
+
+  // ✅ Estado para el modal de confirmación
+  const [confirmData, setConfirmData] = useState({ open: false, id: null });
 
   const [formData, setFormData] = useState({
     nombre: '',
@@ -59,14 +63,21 @@ const AdminServicios = () => {
     }
   };
 
-  const eliminarServicio = async (id) => {
-    if (!window.confirm('¿Eliminar este servicio?')) return;
+  // ✅ Ahora solo abre el modal
+  const eliminarServicio = (id) => {
+    setConfirmData({ open: true, id });
+  };
+
+  // ✅ Función que sí elimina al confirmar
+  const confirmarEliminar = async () => {
     try {
-      await api.delete(`/servicios/${id}`);
+      await api.delete(`/servicios/${confirmData.id}`);
       setToast({ message: '✅ Servicio eliminado correctamente', type: 'success' });
       cargarServicios();
     } catch (error) {
       setToast({ message: '❌ Error al eliminar servicio', type: 'error' });
+    } finally {
+      setConfirmData({ open: false, id: null });
     }
   };
 
@@ -97,11 +108,10 @@ const AdminServicios = () => {
     return tipos[tipo] || tipo;
   };
 
-  // ✅ Convierte la descripción larga en lista de items
   const parseDescripcion = (desc) => {
     if (!desc) return [];
     return desc
-      .split(/\s*-\s*/)       // separa por " - " o "-"
+      .split(/\s*-\s*/)
       .map(item => item.trim())
       .filter(item => item.length > 0);
   };
@@ -115,6 +125,18 @@ const AdminServicios = () => {
           onClose={() => setToast(null)}
         />
       )}
+
+      {/* ✅ Modal de confirmación */}
+      <ConfirmModal
+        isOpen={confirmData.open}
+        title="¿Eliminar servicio?"
+        message="Esta acción no se puede deshacer. ¿Estás seguro de que quieres eliminar este servicio?"
+        confirmText="Sí, eliminar"
+        cancelText="Cancelar"
+        tipo="danger"
+        onConfirm={confirmarEliminar}
+        onCancel={() => setConfirmData({ open: false, id: null })}
+      />
 
       <div style={styles.header}>
         <h2 style={styles.title}>⚙️ Gestión de Servicios</h2>
@@ -227,7 +249,6 @@ const AdminServicios = () => {
               <div key={item.id} style={styles.card}>
                 <h4 style={styles.servicioNombre}>{item.nombre}</h4>
 
-                {/* ✅ Lista con viñetas */}
                 {items.length > 0 ? (
                   <ul style={styles.descList}>
                     {items.map((punto, i) => (
@@ -275,7 +296,6 @@ const styles = {
     color: '#FFFFFF',
     textShadow: '0 2px 12px rgba(0,0,0,0.2)',
   },
-
   header: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -295,7 +315,6 @@ const styles = {
     transition: 'all 0.3s ease',
     boxShadow: '0 4px 15px rgba(34,197,94,0.4)',
   },
-
   form: {
     ...CARDS.default,
     marginBottom: '20px',
@@ -357,7 +376,6 @@ const styles = {
     fontWeight: 'bold',
     transition: 'all 0.3s ease',
   },
-
   grid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(min(320px, 100%), 1fr))',
@@ -376,8 +394,6 @@ const styles = {
     color: COLORS.primary,
     marginBottom: '5px',
   },
-
-  // ✅ LISTA CON VIÑETAS
   descList: {
     listStyle: 'none',
     padding: 0,
@@ -412,7 +428,6 @@ const styles = {
     fontStyle: 'italic',
     margin: '4px 0 10px 0',
   },
-
   infoRow: {
     display: 'flex',
     justifyContent: 'space-between',
