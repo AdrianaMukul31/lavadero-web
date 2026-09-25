@@ -692,15 +692,21 @@ const styles = {
     minWidth: '280px',
     display: 'flex',
     justifyContent: 'center',
+    alignItems: 'center',
+    background: 'rgba(255,255,255,0.05)', // ✅ Fondo sutil para las zonas vacías
+    borderRadius: '24px',
+    padding: '10px',
   },
   heroImg: {
     width: '100%',
-    maxWidth: '500px',
-    height: '350px', // ✅ Altura fija para que no salte el diseño al cambiar de imagen
-    objectFit: 'cover', // ✅ Recorta la imagen para que llene el espacio
+    maxWidth: '600px',              // ✅ Ancho máximo
+    maxHeight: '450px',             // ✅ Altura máxima
+    height: 'auto',                 // ✅ Se adapta a la imagen real
+    objectFit: 'contain',           // ✅ Muestra la imagen completa sin recortar
     borderRadius: '24px',
     boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
     border: '1px solid rgba(255,255,255,0.2)',
+    display: 'block',
   },
   section: {
     padding: '40px 0',
