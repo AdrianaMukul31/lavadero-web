@@ -15,6 +15,20 @@ const Home = ({ user }) => {
   const [error, setError] = useState(null);
 
   // ==========================================
+  // ✅ CARRUSEL DE IMÁGENES (1.jpeg a 6.jpeg)
+  // ==========================================
+  const [imagenActual, setImagenActual] = useState(1);
+  const totalImagenes = 6;
+
+  useEffect(() => {
+    const intervalo = setInterval(() => {
+      setImagenActual((prev) => (prev === totalImagenes ? 1 : prev + 1));
+    }, 3000); // Cambia cada 3 segundos
+
+    return () => clearInterval(intervalo);
+  }, []);
+
+  // ==========================================
   // ANIMACIONES
   // ==========================================
   const fadeInUp = {
@@ -131,16 +145,22 @@ const Home = ({ user }) => {
             <strong>Agendá tu cita en segundos.</strong>
           </motion.p>
         </div>
+        
         <motion.div
           style={styles.heroImage}
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <img
-            src="https://images.unsplash.com/photo-1601362840469-51e4d8d58785?w=600"
-            alt="Coche brillante"
+          {/* ✅ CARRUSEL AUTOMÁTICO */}
+          <motion.img
+            key={imagenActual}
+            src={`/${imagenActual}.jpeg`}
+            alt={`Coche brillante ${imagenActual}`}
             style={styles.heroImg}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
           />
         </motion.div>
       </motion.section>
@@ -676,6 +696,8 @@ const styles = {
   heroImg: {
     width: '100%',
     maxWidth: '500px',
+    height: '350px', // ✅ Altura fija para que no salte el diseño al cambiar de imagen
+    objectFit: 'cover', // ✅ Recorta la imagen para que llene el espacio
     borderRadius: '24px',
     boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
     border: '1px solid rgba(255,255,255,0.2)',
@@ -738,7 +760,7 @@ const styles = {
     gridTemplateColumns: 'repeat(auto-fill, minmax(min(320px, 100%), 1fr))',
     gap: '30px',
     marginTop: '30px',
-    alignItems: 'start',   // ✅ Evita que las tarjetas se estiren al mismo alto
+    alignItems: 'start',
   },
   card: {
     background: 'rgba(255, 255, 255, 0.75)',
@@ -753,8 +775,8 @@ const styles = {
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
-    height: 'fit-content',      // ✅ La tarjeta solo ocupa el alto de su contenido
-    alignSelf: 'start',         // ✅ No se estira al alto de la fila
+    height: 'fit-content',
+    alignSelf: 'start',
   },
   serviceIcon: {
     fontSize: '2.5rem',
@@ -775,7 +797,6 @@ const styles = {
     marginTop: '8px',
     lineHeight: 1.5,
   },
-  // ✅ LISTA CON VIÑETAS
   descList: {
     listStyle: 'none',
     padding: 0,
@@ -838,7 +859,6 @@ const styles = {
     fontSize: '16px',
     letterSpacing: '0.3px',
   },
-  // MODAL AGENDAR
   modalOverlay: {
     position: 'fixed',
     top: 0,
@@ -928,7 +948,6 @@ const styles = {
     padding: '10px 24px',
     fontSize: 'clamp(13px, 3.5vw, 15px)',
   },
-  // CALENDARIO - RESPONSIVE
   calendarioContainer: {
     background: 'rgba(255,255,255,0.5)',
     backdropFilter: 'blur(8px)',
@@ -1021,7 +1040,6 @@ const styles = {
     padding: '0 4px',
     wordBreak: 'break-word',
   },
-  // SECCIÓN DE CONTACTO
   contactoSection: {
     padding: '40px 0',
     maxWidth: '1200px',
