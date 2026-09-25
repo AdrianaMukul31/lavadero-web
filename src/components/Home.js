@@ -139,8 +139,11 @@ const Home = ({ user }) => {
             <span style={{ color: COLORS.silver }}> PERFORMANCE</span>
           </motion.h1>
 
-          <motion.p style={styles.heroSubtitle} variants={fadeInUp}>
-            Somos tu lavadero de confianza. Cuidamos cada detalle de tu vehículo
+                    <motion.p style={styles.heroSubtitle} variants={fadeInUp}>
+            Somos tu lavadero de confianza. Cuidamos cada detalle de tu{' '}
+            <span style={{ color: '#86EFAC', fontWeight: '700' }}>
+              coche, moto o camioneta
+            </span>{' '}
             con productos premium y un acabado impecable.<br />
             <strong>Agendá tu cita en segundos.</strong>
           </motion.p>
